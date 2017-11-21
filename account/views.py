@@ -5,6 +5,7 @@ import json
 
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpRequest
+from django.shortcuts import render_to_response
 
 from account import service
 
@@ -20,7 +21,7 @@ class CommonResponse(object):
     def to_dict(self):
         return {"error_code": self.error_code,
                 "error_message": self.error_message,
-                "data": self.data
+                "data": self.data or {}
                 }
 
     def to_json(self):
@@ -34,7 +35,8 @@ def sign_up_token(request):
     param = json.loads(request.body)
     phone = param["phone"]
     result = service.get_sign_up_token(phone)
-    return HttpResponse(CommonResponse(error_code=0, error_message="", data=result).to_json(), content_type=CONTENT_TYPE_JSON)
+    return HttpResponse(CommonResponse(error_code=0, error_message="", data=result).to_json(),
+                        content_type=CONTENT_TYPE_JSON)
 
 
 def sign_up(request):
@@ -98,7 +100,8 @@ def reset_password(request):
     success = service.validate_token(phone, token, service.TYPE_RESET_PASSWORD)
     if success:
         code, message = service.actual_change_password(phone, password)
-        return HttpResponse(CommonResponse(error_code=code, error_message=message), content_type=CONTENT_TYPE_JSON)
+        return HttpResponse(CommonResponse(error_code=code, error_message=message).to_json(),
+                            content_type=CONTENT_TYPE_JSON)
     return HttpResponse(CommonResponse(error_code=401, error_message="验证码错误").to_json(), content_type=CONTENT_TYPE_JSON)
 
 
@@ -109,7 +112,8 @@ def reset_password_token(request):
     param = json.loads(request.body)
     phone = param["phone"]
     result = service.get_reset_password_token(phone)
-    return HttpResponse(CommonResponse(error_code=0, error_message="", data=result).to_json(), content_type=CONTENT_TYPE_JSON)
+    return HttpResponse(CommonResponse(error_code=0, error_message="", data=result).to_json(),
+                        content_type=CONTENT_TYPE_JSON)
 
 
 def change_password(request):
