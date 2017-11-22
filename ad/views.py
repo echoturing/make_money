@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from account.views import CONTENT_TYPE_JSON
-from ad.service import get_ad_policy
+from ad.service import get_ad_policy, get_gold_config
 from money.tool import CommonResponse
 
 
@@ -20,3 +20,11 @@ def get_ad_policy_view(request):
     return HttpResponse(CommonResponse(error_code=0, error_message="", data={"ad_policies": ad_policies}).to_json(),
                         content_type=CONTENT_TYPE_JSON)
 
+
+def get_gold_config_view(request):
+    """
+    /ad/get_gold_config
+    """
+    gold_configs = get_gold_config()
+    return HttpResponse(CommonResponse(error_code=0, error_message="", data={"gold_configs": gold_configs}).to_json(),
+                        content_type=CONTENT_TYPE_JSON)
