@@ -19,3 +19,4 @@ def get_ad_policy_view(request):
     ad_policies = get_ad_policy()
     return HttpResponse(CommonResponse(error_code=0, error_message="", data={"ad_policies": ad_policies}).to_json(),
                         content_type=CONTENT_TYPE_JSON)
+
