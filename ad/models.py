@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 import datetime
+import json
+
 from django.utils import timezone
 from django.db import models
 
@@ -26,6 +28,9 @@ class AdPolicy(models.Model):
 
     first_created = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
+
+    def __unicode__(self):
+        return str(self.group_id)
 
     class Meta:
         verbose_name = "广告策略设置"
@@ -55,9 +60,19 @@ class GlobalShieldConfig(models.Model):
     first_created = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
 
+    def __unicode__(self):
+        return self.shield_type
+
     class Meta:
         verbose_name = "全局屏蔽设置"
         verbose_name_plural = "全局屏蔽设置"
+
+    def comma_split(self):
+        if self.shield_area == "" or self.shield_area is None:
+            return ""
+        return ",".join(json.loads(self.shield_area))
+
+    comma_split.short_description = "屏蔽地域"
 
 
 class ChannelShieldConfig(models.Model):
@@ -66,6 +81,9 @@ class ChannelShieldConfig(models.Model):
     end_time = models.DateTimeField(verbose_name="结束屏蔽时间")
     first_created = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
+
+    def __unicode__(self):
+        return self.channel
 
     class Meta:
         verbose_name = "渠道屏蔽设置"
@@ -83,7 +101,7 @@ class ChannelShieldConfig(models.Model):
 
     def area(self):
         area = GlobalShieldConfig.objects.first()
-        return area.shield_area
+        return area.comma_split()
 
     area.short_description = "屏蔽地域"
 

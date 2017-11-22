@@ -8,6 +8,7 @@ import datetime
 import re
 import requests
 from django.conf import settings
+from django.forms import Widget
 
 PHONE_REG = re.compile("^(13[0-9]|14[579]|15[0-3,5-9]|17[0135678]|18[0-9])\\d{8}$")
 
