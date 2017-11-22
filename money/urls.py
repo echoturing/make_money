@@ -21,5 +21,6 @@ from account.admin import admin_site
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^manager/', admin_site.urls),
-    url(r'^account/', include('account.urls'))
+    url(r'^account/', include('account.urls')),
+    url(r'^ad/', include('ad.urls'))
 ]

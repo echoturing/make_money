@@ -8,24 +8,9 @@ from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render_to_response
 
 from account import service
+from money.tool import CommonResponse
 
 CONTENT_TYPE_JSON = "application/json"
-
-
-class CommonResponse(object):
-    def __init__(self, error_code, error_message, data=None):
-        self.error_code = error_code
-        self.error_message = error_message
-        self.data = data
-
-    def to_dict(self):
-        return {"error_code": self.error_code,
-                "error_message": self.error_message,
-                "data": self.data or {}
-                }
-
-    def to_json(self):
-        return json.dumps(self.to_dict())
 
 
 def sign_up_token(request):

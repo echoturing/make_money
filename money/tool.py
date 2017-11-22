@@ -39,3 +39,40 @@ def get_rand_int():
     if settings.TEST:
         return "1111"
     return str(random.randrange(1000, 9999))
+
+
+def get_obj_dict(obj, keys, prefix=''):
+    """
+    根据对象封装成字典，支持值，函数和有'name'的外键（对象）
+    prefix是统一添加的前缀
+    """
+    record = {}
+    for name in keys:
+        attr = getattr(obj, name)
+        if callable(attr):  # 函数
+            record[prefix + name] = attr()
+        elif hasattr(attr, "isoformat"):
+            record[prefix + name] = attr.isoformat()
+        elif hasattr(attr, 'name'):  # 外键
+            record[prefix + name] = attr.name
+        elif hasattr(attr, 'username'):  # 特殊处理User
+            record[prefix + name] = attr.username
+        else:
+            record[prefix + name] = attr
+    return record
+
+
+class CommonResponse(object):
+    def __init__(self, error_code, error_message, data=None):
+        self.error_code = error_code
+        self.error_message = error_message
+        self.data = data
+
+    def to_dict(self):
+        return {"error_code": self.error_code,
+                "error_message": self.error_message,
+                "data": self.data or {}
+                }
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
