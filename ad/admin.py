@@ -13,6 +13,8 @@ from ad.models import *
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+from ad.service import get_latest_reward_cycle_count
+
 
 class MyAdminSite(AdminSite):
     site_title = '后台管理'
@@ -23,9 +25,25 @@ class MyAdminSite(AdminSite):
 admin_site = MyAdminSite(name='administrator')
 
 
+class AdPolicyAdminForm(forms.ModelForm):
+    model = AdPolicy
+
+    def clean(self):
+        data = self.cleaned_data
+        has_gold = data.get("has_gold")
+        if has_gold:
+            latest_reward_cycle = get_latest_reward_cycle_count()
+            if latest_reward_cycle:
+                already_has_gold_count = len(AdPolicy.objects.filter(has_gold=True).exclude(id=self.instance.pk))
+                if already_has_gold_count + 1 > latest_reward_cycle.count:
+                    raise ValidationError(_('广告位是否有红包设置必须小于等于周期红包个数(当前红包数被设置为{})'.format(latest_reward_cycle.count)),
+                                          code='invalid')
+
+
 class AdPolicyAdmin(admin.ModelAdmin):
     list_display = ["group_id", "ad_position", "edit_by", "last_modify", "has_gold"]
     readonly_fields = ["group_id", "edit_by"]
+    form = AdPolicyAdminForm
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -132,6 +150,15 @@ class GoldConfigAdmin(admin.ModelAdmin):
 
 class ExchangeRateAdmin(admin.ModelAdmin):
     list_display = ["first_created", "gold_count", "money"]
+    readonly_fields = ["first_created", ]
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            raise Exception("不能修改对象")
+        super(ExchangeRateAdmin, self).save_model(request, obj, form, change)
+
+    def delete_model(self, request, obj):
+        raise Exception("不能删除对象")
 
 
 class RewardCycleAdmin(admin.ModelAdmin):
@@ -161,20 +188,12 @@ class RewardCycleCountAdmin(admin.ModelAdmin):
 class RewardConditionAdmin(admin.ModelAdmin):
     list_display = ["typ", "first_created"]
 
-    def save_model(self, request, obj, form, change):
-        if change:
-            raise Exception("不能修改对象")
-        super(RewardConditionAdmin, self).save_model(request, obj, form, change)
-
-    def delete_model(self, request, obj):
-        raise Exception("不能删除对象")
-
 
 admin_site.register(AdPolicy, AdPolicyAdmin)
-# admin_site.register(RewardCondition, RewardConditionAdmin)
-# admin_site.register(RewardCycleCount, RewardCycleCountAdmin)
-# admin_site.register(RewardCycle, RewardCycleAdmin)
-# admin_site.register(ExchangeRate, ExchangeRateAdmin)
+admin_site.register(RewardCondition, RewardConditionAdmin)
+admin_site.register(RewardCycleCount, RewardCycleCountAdmin)
+admin_site.register(RewardCycle, RewardCycleAdmin)
+admin_site.register(ExchangeRate, ExchangeRateAdmin)
 admin_site.register(ChannelShieldConfig, ChannelShieldConfigAdmin)
 admin_site.register(GlobalShieldConfig, GlobalShieldConfigAdmin)
 admin_site.register(GoldConfig, GoldConfigAdmin)

@@ -45,6 +45,9 @@ class GoldConfig(models.Model):
     first_created = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
 
+    def __unicode__(self):
+        return self.ad_source + "_" + self.ad_type
+
     class Meta:
         verbose_name = "金币设置"
         verbose_name_plural = "金币设置"
@@ -108,9 +111,12 @@ class ChannelShieldConfig(models.Model):
 
 class ExchangeRate(models.Model):
     gold_count = models.IntegerField(verbose_name="金币")
-    money = models.IntegerField(verbose_name="对应人民币")
+    money = models.IntegerField(verbose_name="对应人民币(分)")
     first_created = models.DateTimeField(verbose_name="日期", auto_now_add=True)
     last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
+
+    def __unicode__(self):
+        return "金币汇率:" + self.first_created.isoformat()
 
     class Meta:
         indexes = [
@@ -147,8 +153,8 @@ class RewardCycleCount(models.Model):
 
 
 REWARD_CONDITION_CHOICE = (
-    ('阅读时长', 'read_last'),
-    ('下载应用体验时长', 'experience_last'),
+    ('read_last', '阅读时长'),
+    ('experience_last', '下载应用体验时长'),
 )
 
 
@@ -157,6 +163,9 @@ class RewardCondition(models.Model):
     last = models.IntegerField(verbose_name="时长", default=10)
     first_created = models.DateTimeField(verbose_name="日期", auto_now_add=True)
     last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
+
+    def __unicode__(self):
+        return self.typ
 
     class Meta:
         verbose_name = "红包领取条件设置"

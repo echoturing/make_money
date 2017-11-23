@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ad.models import AdPolicy, GoldConfig
+from ad.models import AdPolicy, GoldConfig, RewardCycleCount
 from money.tool import get_obj_dict
 
 
@@ -27,3 +27,11 @@ def get_gold_config(**kwargs):
     for gold_config in gold_configs:
         result.append(get_obj_dict(gold_config, keys))
     return result
+
+
+def get_latest_reward_cycle_count():
+    """
+    :rtype :RewardCycleCount
+    """
+    latest_reward_cycle = RewardCycleCount.objects.filter().order_by("-first_created").first()
+    return latest_reward_cycle
