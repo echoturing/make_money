@@ -8,7 +8,7 @@ import datetime
 import re
 import requests
 from django.conf import settings
-from django.forms import Widget
+from django import forms
 
 PHONE_REG = re.compile("^(13[0-9]|14[579]|15[0-3,5-9]|17[0135678]|18[0-9])\\d{8}$")
 
@@ -77,3 +77,16 @@ class CommonResponse(object):
 
     def to_json(self):
         return json.dumps(self.to_dict())
+
+
+class MyMultipleChoiceField(forms.MultipleChoiceField):
+    def clean(self, value):
+        source_value = super(MyMultipleChoiceField, self).clean(value)
+        return json.dumps(source_value)
+
+    def prepare_value(self, value):
+        if value is None or value == "":
+            return value
+        elif isinstance(value, (list, tuple)):
+            return value
+        return json.loads(value)

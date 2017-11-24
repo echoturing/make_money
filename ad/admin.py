@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from ad.service import get_latest_reward_cycle_count
+from money.tool import MyMultipleChoiceField
 
 
 class AdPolicyAdminForm(forms.ModelForm):
@@ -78,19 +79,6 @@ AREA_CHOICE = (("北京市", "北京市"),
                ("香港特别行政区", "香港特别行政区"),
                ("澳门特别行政区", "澳门特别行政区"),
                )
-
-
-class MyMultipleChoiceField(forms.MultipleChoiceField):
-    def clean(self, value):
-        source_value = super(MyMultipleChoiceField, self).clean(value)
-        return json.dumps(source_value)
-
-    def prepare_value(self, value):
-        if value is None or value == "":
-            return value
-        elif isinstance(value, (list, tuple)):
-            return value
-        return json.loads(value)
 
 
 class GlobalShieldConfigAdminForm(forms.ModelForm):

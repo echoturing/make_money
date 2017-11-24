@@ -14,7 +14,7 @@ class VersionAdmin(admin.ModelAdmin):
 
 class UpdateConfigAdmin(admin.ModelAdmin):
     list_display = ["from_version", "to_version", "edit_by", "first_created", "last_modify"]
-    readonly_fields = ["edit_by",]
+    readonly_fields = ["edit_by", ]
 
     def save_model(self, request, obj, form, change):
         obj.edit_by = request.user.username
