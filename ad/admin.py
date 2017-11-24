@@ -1,28 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
-
 from django import forms
 from django.contrib import admin
-from django.contrib.admin import AdminSite
 
+from account.admin import admin_site
 from ad.models import *
 
-# Register your models here.
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from ad.service import get_latest_reward_cycle_count
-
-
-class MyAdminSite(AdminSite):
-    site_title = '后台管理'
-    site_header = '后台管理'
-    index_title = '后台管理'
-
-
-admin_site = MyAdminSite(name='administrator')
 
 
 class AdPolicyAdminForm(forms.ModelForm):

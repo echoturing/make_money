@@ -29,6 +29,9 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'statistics.apps.StatisticsConfig',
+    'version.apps.VersionConfig',
+    'cash.apps.CashConfig',
     'ad.apps.AdConfig',
     'flat_responsive',
     'django.contrib.admin',
