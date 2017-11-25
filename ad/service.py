@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from ad.models import AdPolicy, GoldConfig, RewardCycleCount, ExchangeRate
+import json
+
+from ad.models import AdPolicy, GoldConfig, RewardCycleCount, ExchangeRate, GlobalShieldConfig, ChannelShieldConfig
 from money.tool import get_obj_dict
 
 
@@ -49,3 +51,28 @@ def get_latest_exchange():
     """
     latest_exchange = ExchangeRate.objects.filter().order_by("-first_created").first()
     return latest_exchange
+
+
+def build_global_shield_config(config):
+    keys = ["shield_type", "shield_area"]
+    result = get_obj_dict(config, keys)
+    result["shield_area"] = json.loads(result["shield_area"])
+    return result
+
+
+def build_channel_shield_config(config):
+    keys = ["channel", "start_time", "end_time"]
+    return get_obj_dict(config, keys)
+
+
+def get_shield_config():
+    """
+    获取最新的屏蔽策略
+    """
+    global_shield_config = GlobalShieldConfig.objects.first()
+    global_shield_config_dict = build_global_shield_config(global_shield_config)
+    channel_shield_config_list = ChannelShieldConfig.objects.all()
+    channel_shield_config_dict_list = []
+    for channel_config in channel_shield_config_list:
+        channel_shield_config_dict_list.append(build_channel_shield_config(channel_config))
+    return global_shield_config_dict, channel_shield_config_dict_list

@@ -70,6 +70,9 @@ class CashRecordAdmin(admin.ModelAdmin):
     def delete_model(self, request, obj):
         raise Exception("不能删除对象")
 
+    def add_view(self, request, form_url='', extra_context=None):
+        raise Exception("不能创建对象")
+
     actions = [make_accept, make_refused]
 
     def get_actions(self, request):
