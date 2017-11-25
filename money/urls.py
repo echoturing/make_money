@@ -22,5 +22,6 @@ urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^manager/', admin_site.urls),
     url(r'^account/', include('account.urls')),
-    url(r'^ad/', include('ad.urls'))
+    url(r'^ad/', include('ad.urls')),
+    url(r'^cash/', include('cash.urls')),
 ]

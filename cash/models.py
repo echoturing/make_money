@@ -50,19 +50,31 @@ CASH_RECORD_STATUS = (
     ("已通过", "已通过"),
     ("已拒绝", "已拒绝"),
 )
+ACCEPT = CASH_RECORD_STATUS[1][1]
+REFUSED = CASH_RECORD_STATUS[2][1]
 
 
 class CashRecord(models.Model):
-    user = models.ForeignKey(User, verbose_name="提现人手机号", to_field="username")
-    phone = models.CharField(verbose_name="提现人填写的手机号", max_length=30)
+    channel = models.CharField(verbose_name="渠道", max_length=50, default="")
+    device_brand = models.CharField(verbose_name="手机品牌", max_length=50, default="")
+    version_num = models.CharField(verbose_name="版本", max_length=50, default="")
+
+    user = models.ForeignKey(User, verbose_name="用户手机号", to_field="username")
+    phone = models.CharField(verbose_name="用户填写的手机号", max_length=30)
+
     device_id = models.CharField(verbose_name="device_id", max_length=200, default="")
+
     real_name = models.CharField(verbose_name="姓名", max_length=50)
     identity = models.CharField(verbose_name="身份证号", max_length=100)
     machine_type = models.CharField(verbose_name="机型", max_length=100)
-    cash_type = models.CharField(verbose_name="微信号/支付宝", max_length=100, default=100)
+
+    cash_type = models.CharField(verbose_name="微信号/支付宝", max_length=100, default="")
     money = models.IntegerField(verbose_name="提现金额(分)", default=0)
     status = models.CharField(verbose_name="状态", max_length=30, choices=CASH_RECORD_STATUS)
-    reason = models.CharField(verbose_name="原因", max_length=200, default="")
+    reason = models.CharField(verbose_name="原因", max_length=200, default="", blank=True)
+
+    first_created = models.DateTimeField(verbose_name="日期", auto_now_add=True)
+    last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
 
     class Meta:
         verbose_name = "提现记录"

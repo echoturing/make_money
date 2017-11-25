@@ -8,7 +8,7 @@ from django.contrib import admin
 
 # Register your models here.
 from account.admin import admin_site
-from cash.models import CashCategory, CashChannel
+from cash.models import CashCategory, CashChannel, CashRecord, ACCEPT, REFUSED
 from money.tool import MyMultipleChoiceField
 
 
@@ -42,5 +42,44 @@ class CashCategoryAdmin(admin.ModelAdmin):
         super(CashCategoryAdmin, self).save_model(request, obj, form, change)
 
 
+def make_accept(modeladmin, request, queryset):
+    queryset.update(status=ACCEPT)
+
+
+make_accept.short_description = "全部通过"
+
+
+def make_refused(modeladmin, request, queryset):
+    queryset.update(status=REFUSED)
+
+
+make_refused.short_description = "全部拒绝"
+
+
+class CashRecordAdmin(admin.ModelAdmin):
+    list_display = ["id", "user", "phone", "device_id", "real_name", "identity", "machine_type", "cash_type", "money",
+                    "status", "reason"]
+
+    list_filter = ["cash_type", ]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            raise Exception("不能创建对象")
+        super(CashRecordAdmin, self).save_model(request, obj, form, change)
+
+    def delete_model(self, request, obj):
+        raise Exception("不能删除对象")
+
+    actions = [make_accept, make_refused]
+
+    def get_actions(self, request):
+        actions = super(CashRecordAdmin, self).get_actions(request)
+        if request.user.username[0].upper() != 'J':
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
+
+
+admin_site.register(CashRecord, CashRecordAdmin)
 admin_site.register(CashCategory, CashCategoryAdmin)
 admin_site.register(CashChannel, CashChannelAdmin)

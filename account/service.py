@@ -18,6 +18,9 @@ RESET_PASSWORD_PREFIX = "reset_password_"
 
 
 def get_reset_password_token(phone):
+    """
+    获取重置密码的验证码
+    """
     key = RESET_PASSWORD_PREFIX + phone
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
@@ -37,6 +40,9 @@ def actual_change_password(phone, password):
 
 
 def get_sign_up_token(phone):
+    """
+    获取注册验证码
+    """
     key = SIGN_UP_PREFIX + phone
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
@@ -46,6 +52,9 @@ def get_sign_up_token(phone):
 
 
 def validate_token(phone, token, typo):
+    """
+    验证码验证
+    """
     key = ""
     if typo == TYPE_SIGN_UP:
         key = SIGN_UP_PREFIX + phone
@@ -55,6 +64,18 @@ def validate_token(phone, token, typo):
     if value == token:
         return True
     return False
+
+
+def expire_token(phone, token, typo):
+    """
+    过期token
+    """
+    key = ""
+    if typo == TYPE_SIGN_UP:
+        key = SIGN_UP_PREFIX + phone
+    elif typo == TYPE_RESET_PASSWORD:
+        key = RESET_PASSWORD_PREFIX + phone
+    cache.set(key, "", 0)
 
 
 def actual_sign_up(phone, password):
@@ -90,5 +111,8 @@ def build_user_info(user):
 
 
 def get_user_info(user_id):
+    """
+    获取用户首页信息
+    """
     user = User.objects.select_related().get(id=user_id)
     return build_user_info(user)

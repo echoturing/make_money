@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ad.models import AdPolicy, GoldConfig, RewardCycleCount
+from ad.models import AdPolicy, GoldConfig, RewardCycleCount, ExchangeRate
 from money.tool import get_obj_dict
 
 
@@ -35,3 +35,17 @@ def get_latest_reward_cycle_count():
     """
     latest_reward_cycle = RewardCycleCount.objects.filter().order_by("-first_created").first()
     return latest_reward_cycle
+
+
+def build_exchange(exchange):
+    keys = ["id", "gold_count", "money", "first_created", "last_modify"]
+    return get_obj_dict(exchange, keys)
+
+
+def get_latest_exchange():
+    """
+    获取最新的兑换率对象
+    :rtype : ExchangeRate
+    """
+    latest_exchange = ExchangeRate.objects.filter().order_by("-first_created").first()
+    return latest_exchange
