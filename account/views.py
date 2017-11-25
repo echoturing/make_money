@@ -122,3 +122,18 @@ def get_user(request):
     :type request HttpRequest
     """
     return HttpResponse(request.user.username)
+
+
+def user_info(request):
+    """
+    获取用户主页信息
+    """
+    user = request.user
+
+    if not user.is_authenticated():
+        return HttpResponse(CommonResponse(error_code=401, error_message="用户未登录").to_json(),
+                            content_type=CONTENT_TYPE_JSON)
+
+    data = service.get_user_info(user.id)
+    return HttpResponse(CommonResponse(error_code=0, error_message="", data=data).to_json(),
+                        content_type=CONTENT_TYPE_JSON)

@@ -11,5 +11,7 @@ urlpatterns = [
     url(r'^reset_password/$', reset_password, name="reset_password"),
     url(r'^get_reset_password_token/$', reset_password_token, name="reset_password_token"),
     url(r'^change_password/$', change_password, name="change_password"),
+    url(r'^get_user_info/$', user_info, name="get_user_info"),
+
     url(r'^user/$', get_user),
 ]
