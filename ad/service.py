@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 
-from ad.models import AdPolicy, GoldConfig, RewardCycleCount, ExchangeRate, GlobalShieldConfig, ChannelShieldConfig
+from ad.models import AdPolicy, GoldConfig, RewardCycleCount, ExchangeRate, GlobalShieldConfig, ChannelShieldConfig, \
+    RewardCycle, RewardCondition, REWARD_CONDITION_CHOICE
 from money.tool import get_obj_dict
 
 
@@ -44,15 +45,6 @@ def build_exchange(exchange):
     return get_obj_dict(exchange, keys)
 
 
-def get_latest_exchange():
-    """
-    获取最新的兑换率对象
-    :rtype : ExchangeRate
-    """
-    latest_exchange = ExchangeRate.objects.filter().order_by("-first_created").first()
-    return latest_exchange
-
-
 def build_global_shield_config(config):
     keys = ["shield_type", "shield_area"]
     result = get_obj_dict(config, keys)
@@ -76,3 +68,55 @@ def get_shield_config():
     for channel_config in channel_shield_config_list:
         channel_shield_config_dict_list.append(build_channel_shield_config(channel_config))
     return global_shield_config_dict, channel_shield_config_dict_list
+
+
+def build_exchange_rate(exchange):
+    keys = ["gold_count", "money", "first_created"]
+    return get_obj_dict(exchange, keys)
+
+
+def get_latest_exchange():
+    """
+    获取最新的兑换率对象
+    :rtype : ExchangeRate
+    """
+    latest_exchange = ExchangeRate.objects.filter().order_by("-first_created").first()
+    return latest_exchange
+
+
+def get_latest_exchange_rate_json():
+    return build_exchange_rate(get_latest_exchange())
+
+
+def build_reward_cycle(reward_cycle):
+    keys = ["cycle", "first_created"]
+    return get_obj_dict(reward_cycle, keys)
+
+
+def get_reward_cycle_json():
+    latest_reward_cycle = RewardCycle.objects.filter().order_by("-first_created").first()
+    return build_reward_cycle(latest_reward_cycle)
+
+
+def build_reward_cycle_count(cycle_count):
+    keys = ["count", "first_created"]
+    return get_obj_dict(cycle_count, keys)
+
+
+def get_reward_cycle_count_json():
+    latest_reward_cycle_count = RewardCycleCount.objects.filter().order_by("-first_created").first()
+    return build_reward_cycle_count(latest_reward_cycle_count)
+
+
+def build_reward_condition(condition):
+    keys = ["last", "first_created"]
+    return get_obj_dict(condition, keys)
+
+
+def get_reward_condition_json():
+    read_reward_condition = RewardCondition.objects.filter(typ=REWARD_CONDITION_CHOICE[0][0]).order_by("first_created").first()
+    download_reward_condition = RewardCondition.objects.filter(typ=REWARD_CONDITION_CHOICE[1][0]).order_by(
+        "first_created").first()
+    read_reward_condition_json = build_reward_condition(read_reward_condition)
+    download_reward_condition_json = build_reward_condition(download_reward_condition)
+    return read_reward_condition_json, download_reward_condition_json
