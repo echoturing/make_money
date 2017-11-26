@@ -135,7 +135,7 @@ CACHES = {
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-TEST = True
+TEST = False
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:63342',
