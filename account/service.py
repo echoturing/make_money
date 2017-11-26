@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import random
-
+from __future__ import unicode_literals
 from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -81,13 +80,13 @@ def expire_token(phone, token, typo):
 def actual_sign_up(phone, password):
     try:
         user = User.objects.get(username=phone)
-        return user, "该手机已经被注册"
+        return user, 101, "该手机已经被注册"
     except ObjectDoesNotExist:
         user = User.objects.create_user(username=phone, password=password)
         user_profile, created = UserProfile.objects.get_or_create(user=user)
         user.save()
         user_profile.save()
-        return user, "注册成功"
+        return user, 0, "注册成功"
 
 
 def build_user_profile(user_profile):

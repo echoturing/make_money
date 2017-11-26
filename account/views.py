@@ -35,9 +35,9 @@ def sign_up(request):
     code = 0
     success = service.validate_token(phone, token, service.TYPE_SIGN_UP)
     if success:
-        user, message = service.actual_sign_up(phone, password)
+        _, code, message = service.actual_sign_up(phone, password)
         if message:
-            code = 101
+            code = 0
         return HttpResponse(CommonResponse(error_code=code, error_message=message).to_json(),
                             content_type=CONTENT_TYPE_JSON)
     message = "验证码错误"
