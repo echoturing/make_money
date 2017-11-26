@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'cash.apps.CashConfig',
     'ad.apps.AdConfig',
     'flat_responsive',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -134,3 +136,8 @@ CACHES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 TEST = True
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:63342',
+    '127.0.0.1:9000'
+)
