@@ -12,9 +12,21 @@ APP_KEY = "5a030cc3aed179635800011c"
 UMENG_MESSAGE_SECRET = "d27c252299d4656b338993a84800f8e6"  # 这好像没什么卵用?
 
 
+class PushType(object):
+    unicast = "unicast"
+    broadcast = "broadcast"
+
+
 class DisplayType(object):
     notification = "notification"
     message = "message"
+
+
+class AfterOpen(object):
+    go_app = "go_app"
+    go_url = "go_url"
+    go_activity = "go_activity"
+    go_custom = "go_custom"
 
 
 def get_time_stamp():
@@ -27,11 +39,15 @@ def md5(s):
 
 
 class Body(object):
-    def __init__(self, ticker, title, text, after_open="go_app"):
+    def __init__(self, ticker, title, text, after_open, url="", builder_id=0):
         self.ticker = ticker
         self.title = title
         self.text = text
         self.after_open = after_open
+        if self.after_open == AfterOpen.go_url:
+            assert url != "", "after open is {},url should not be empty!".format(AfterOpen.go_url)
+            self.url = url
+        self.builder_id = builder_id
 
     def to_dict(self):
         return {
@@ -39,6 +55,51 @@ class Body(object):
             "title": self.title,
             "text": self.text,
             "after_open": self.after_open,
+            "builder_id": self.builder_id,
+        }
+
+
+class Filter(object):
+    def __init__(self, channels, provinces):
+        """
+        需要屏蔽的channel
+
+        """
+
+        self.channels = channels
+        self.provinces = provinces
+
+    def to_dict(self):
+        channel_list = []
+        province_list = []
+        for channel in self.channels:
+            channel_list.append(
+                {
+                    "not": {
+                        "channel": channel,
+                    }
+                }
+            )
+        for province in self.provinces:
+            province_list.append(
+                {
+                    "not": {
+                        "province": province,
+                    }
+                }
+            )
+
+        return {
+            "where": {
+                "and": [
+                    {
+                        "and": channel_list,
+                    },
+                    {
+                        "and": province_list
+                    }
+                ]
+            }
         }
 
 
@@ -59,35 +120,41 @@ class Payload(object):
         }
 
 
-class BroadCastPushMessage(object):
+class PushMessage(object):
     base_url = "https://msgapi.umeng.com/api/send"
     method = "POST"
     app_master_secret = "xw3nhtfhjudmp5byvbtydnyz2j6uhlsl"
     type = "broadcast"
     session = requests.session()
 
-    def __init__(self, appkey):
+    def __init__(self, appkey, type):
         """
         :type appkey:basestring
-        :type timestamp:int
-        :type payload:Payload
         """
         self.appkey = appkey
+        self.type = type
 
     def sign(self, post_body, ):
         return md5('%s%s%s%s' % (self.method, self.base_url, post_body, self.app_master_secret))
 
-    def push(self, payload):
+    def push(self, payload, _filter):
+        """
+        :type payload Payload
+        :type _filter Filter
+        """
         body_dict = {
             "appkey": self.appkey,
             "timestamp": get_time_stamp(),
             "type": self.type,
-            "payload": payload.to_dict()
+            "payload": payload.to_dict(),
         }
+        if _filter:
+            body_dict["filter"] = _filter.to_dict()
         post_body = json.dumps(body_dict)
         url = self.base_url + "?sign=" + self.sign(post_body)
         response = self.session.post(url, json=body_dict)
         print response.content
 
 
-broad_cast_push_manager = BroadCastPushMessage(appkey=APP_KEY)
+broad_cast_push_manager = PushMessage(appkey=APP_KEY, type=PushType.broadcast)
+unicast_push_manager = PushMessage(appkey=APP_KEY, type=PushType.unicast)

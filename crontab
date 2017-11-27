@@ -1,1 +1,1 @@
-* 1 * * * /root/workspace/ENV/bin/python /root/workspace/money/manage.py exchange_gold_to_money
+0 1 * * * /root/workspace/ENV/bin/python /root/workspace/money/manage.py exchange_gold_to_money

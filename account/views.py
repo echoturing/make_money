@@ -2,15 +2,28 @@
 from __future__ import unicode_literals
 
 import json
+from functools import update_wrapper
 
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render_to_response
 
 from account import service
 from money.tool import CommonResponse
 
 CONTENT_TYPE_JSON = "application/json"
+
+
+def current_session_id_desc(func):
+    def wrapper(request, *args, **kwargs):
+        user = request.user
+        user_profile = user.userprofile
+        current_session_id = request.session.session_key
+        if user_profile.current_session_id != "" and current_session_id != user_profile.current_session_id:
+            return HttpResponse(CommonResponse(error_code=401, error_message="用户未登录").to_json(),
+                                content_type=CONTENT_TYPE_JSON)
+        return func(request, *args, **kwargs)
+
+    return update_wrapper(wrapper, func)
 
 
 def sign_up_token(request):
@@ -32,10 +45,11 @@ def sign_up(request):
     phone = param["phone"]
     token = param["token"]
     password = param["password"]
+    device_token = param["device_token"]
     code = 0
     success = service.validate_token(phone, token, service.TYPE_SIGN_UP)
     if success:
-        _, code, message = service.actual_sign_up(phone, password)
+        _, code, message = service.actual_sign_up(phone, password, device_token)
         if message:
             code = 0
         return HttpResponse(CommonResponse(error_code=code, error_message=message).to_json(),
@@ -53,12 +67,16 @@ def sign_in(request):
     param = json.loads(request.body)
     phone = param["phone"]
     password = param["password"]
+    device_token = param["device_token"]
     user = authenticate(username=phone, password=password)
     if user is not None:
         login(request, user)
         if not request.session.session_key:
             request.session.save()
         session_id = request.session.session_key
+        user.userprofile.device_token = device_token
+        user.userprofile.current_session_id = session_id
+        user.userprofile.save()
         data = {"sessionid": session_id}
         return HttpResponse(CommonResponse(error_code=0, error_message="登录成功", data=data).to_json(),
                             content_type=CONTENT_TYPE_JSON)
@@ -117,6 +135,7 @@ def change_password(request):
     return HttpResponse(CommonResponse(error_code=401, error_message="旧密码错误").to_json(), content_type=CONTENT_TYPE_JSON)
 
 
+@current_session_id_desc
 def get_user(request):
     """
     :type request HttpRequest
@@ -124,6 +143,7 @@ def get_user(request):
     return HttpResponse(request.user.username)
 
 
+@current_session_id_desc
 def user_info(request):
     """
     获取用户主页信息

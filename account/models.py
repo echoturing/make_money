@@ -16,6 +16,8 @@ class UserProfile(models.Model):
     total_get = models.IntegerField(verbose_name="累计收入(分)", default=0)
     first_created = models.DateTimeField(verbose_name="日期", auto_now_add=True)
     last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
+    device_token = models.CharField(verbose_name="device_token", max_length=200, default="")
+    current_session_id = models.CharField(verbose_name="当前session_id", max_length=100, default="")
 
 
 class GoldToMoneyRecord(models.Model):

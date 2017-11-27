@@ -14,5 +14,6 @@ class Command(BaseCommand):
         ticker = "测试ticker"
         title = "测试title"
         text = "测试text"
-        broad_cast_push_manager.push(payload=Payload(Body(ticker=ticker, title=title, text=text)
-                                                     ))
+        broad_cast_push_manager.push(
+            payload=Payload(Body(ticker=ticker, title=title, text=text, after_open=AfterOpen.go_activity)
+                            ))

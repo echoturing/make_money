@@ -77,13 +77,13 @@ def expire_token(phone, token, typo):
     cache.set(key, "", 0)
 
 
-def actual_sign_up(phone, password):
+def actual_sign_up(phone, password, device_token):
     try:
         user = User.objects.get(username=phone)
         return user, 101, "该手机已经被注册"
     except ObjectDoesNotExist:
         user = User.objects.create_user(username=phone, password=password)
-        user_profile, created = UserProfile.objects.get_or_create(user=user)
+        user_profile, created = UserProfile.objects.get_or_create(user=user, device_token=device_token)
         user.save()
         user_profile.save()
         return user, 0, "注册成功"
