@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import raven
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -36,6 +38,7 @@ INSTALLED_APPS = [
     'ad.apps.AdConfig',
     'flat_responsive',
     'corsheaders',
+    'raven.contrib.django.raven_compat',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -141,3 +144,9 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:63342',
     '127.0.0.1:9000'
 )
+RAVEN_CONFIG = {
+    'dsn': 'https://52da4161b4ca47a6a66fab8369334f1e:b18bf2ac4766426f98c15b443f032a65@sentry.io/250728',
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
+}
