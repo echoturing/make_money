@@ -15,6 +15,7 @@ CONTENT_TYPE_JSON = "application/json"
 
 def current_session_id_desc(func):
     def wrapper(request, *args, **kwargs):
+        print request.COOKIES
         user = request.user
         if not user.is_authenticated():
             return HttpResponse(CommonResponse(error_code=401, error_message="用户未登录").to_json(),
