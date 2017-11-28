@@ -35,7 +35,8 @@ class Command(BaseCommand):
                 user_profile = UserProfile.objects.select_for_update().get(id=user_profile_id)
                 yesterday_user_gold_records = list(GetGoldRecord.objects.filter(user=user_profile.user,
                                                                                 first_created__range=(
-                                                                                    start_time, end_time)))
+                                                                                    start_time, end_time),
+                                                                                exchanged=False))  # 未兑换的
                 yesterday_user_golds = sum((record.gold for record in yesterday_user_gold_records))
 
                 if yesterday_user_golds > 0:

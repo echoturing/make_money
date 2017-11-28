@@ -114,9 +114,15 @@ def build_reward_condition(condition):
 
 
 def get_reward_condition_json():
-    read_reward_condition = RewardCondition.objects.filter(typ=REWARD_CONDITION_CHOICE[0][0]).order_by("first_created").first()
+    read_reward_condition = RewardCondition.objects.filter(typ=REWARD_CONDITION_CHOICE[0][0]).order_by(
+        "first_created").first()
     download_reward_condition = RewardCondition.objects.filter(typ=REWARD_CONDITION_CHOICE[1][0]).order_by(
         "first_created").first()
     read_reward_condition_json = build_reward_condition(read_reward_condition)
     download_reward_condition_json = build_reward_condition(download_reward_condition)
     return read_reward_condition_json, download_reward_condition_json
+
+
+def get_current_filter():
+    global_shield_config_dict, channel_shield_config_dict_list = get_shield_config()
+
