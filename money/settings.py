@@ -143,7 +143,8 @@ TEST = False
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:63342',
-    '127.0.0.1:9000'
+    '127.0.0.1:9000',
+    '39.106.69.82',
 )
 RAVEN_CONFIG = {
     'dsn': 'https://52da4161b4ca47a6a66fab8369334f1e:b18bf2ac4766426f98c15b443f032a65@sentry.io/250728',
