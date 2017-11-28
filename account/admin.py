@@ -6,7 +6,7 @@ from django.contrib import admin
 # Register your models here.
 from django.contrib.admin import AdminSite
 
-from account.models import UserProfile, GoldToMoneyRecord
+from account.models import UserProfile, GoldToMoneyRecord, GetGoldRecord
 
 
 class MyAdminSite(AdminSite):
@@ -27,5 +27,10 @@ class GoldToMoneyRecordAdmin(admin.ModelAdmin):
     list_filter = ("first_created",)
 
 
+class GetGoldRecordAdmin(admin.ModelAdmin):
+    list_display = ["user", "gold", "exchanged", "first_created"]
+
+
+admin_site.register(GetGoldRecord, GetGoldRecordAdmin)
 admin_site.register(UserProfile, UserProfileAdmin)
 admin_site.register(GoldToMoneyRecord, GoldToMoneyRecordAdmin)

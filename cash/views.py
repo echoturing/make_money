@@ -7,11 +7,12 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
-from account.views import CONTENT_TYPE_JSON
+from account.views import CONTENT_TYPE_JSON, current_session_id_desc
 from cash import service
 from money.tool import CommonResponse
 
 
+@current_session_id_desc
 def generate_cash_record(request):
     """
     生成提现记录
