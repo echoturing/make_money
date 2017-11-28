@@ -17,5 +17,14 @@ class MyAdminSite(AdminSite):
 
 admin_site = MyAdminSite(name='manager')
 
-# admin_site.register(UserProfile)
-# admin_site.register(GoldToMoneyRecord)
+
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ["user", "gold", "balance", "cashed_balance", "total_get", "first_created", "last_modify"]
+
+
+class GoldToMoneyRecordAdmin(admin.ModelAdmin):
+    list_display = ["user", "gold", "balance", "exchange_rate", "first_created", "last_modify"]
+
+
+admin_site.register(UserProfile, UserProfileAdmin)
+admin_site.register(GoldToMoneyRecord, GoldToMoneyRecordAdmin)
