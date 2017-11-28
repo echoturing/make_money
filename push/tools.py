@@ -39,17 +39,30 @@ def md5(s):
 
 
 class Body(object):
-    def __init__(self, ticker, title, text, after_open, url="", builder_id=0):
+    def __init__(self, payload_display_type, after_open="", ticker="", title="", text="", url="", builder_id=0,
+                 custom=""):
+
+        if payload_display_type == DisplayType.message:
+            assert custom != "", "display_type is {},custom should not be empty ".format(DisplayType.message)
+        else:
+            assert ticker != "" and title != "" and text != "" and after_open != "", \
+                "display_type is notification,ticker title text should not be empty"
+        if after_open == AfterOpen.go_url:
+            assert url != "", "after open is {},url should not be empty!".format(AfterOpen.go_url)
+        self.after_open = after_open
+        self.payload_display_type = payload_display_type
         self.ticker = ticker
         self.title = title
         self.text = text
-        self.after_open = after_open
-        if self.after_open == AfterOpen.go_url:
-            assert url != "", "after open is {},url should not be empty!".format(AfterOpen.go_url)
-            self.url = url
+        self.url = url
         self.builder_id = builder_id
+        self.custom = custom
 
     def to_dict(self):
+        if self.payload_display_type == DisplayType.message:
+            return {
+                "custom": self.custom
+            }
         return {
             "ticker": self.ticker,
             "title": self.title,
@@ -104,7 +117,7 @@ class Filter(object):
 
 
 class Payload(object):
-    def __init__(self, body, display_type=DisplayType.notification):
+    def __init__(self, body, display_type):
         """
         :type body Body
         :type display_type:basestring     notification-通知，message-消息
@@ -121,7 +134,8 @@ class Payload(object):
 
 
 class PushMessage(object):
-    base_url = "https://msgapi.umeng.com/api/send"
+    # base_url = "https://msgapi.umeng.com/api/send"
+    base_url = "http://msg.umeng.com/api/send"
     method = "POST"
     app_master_secret = "xw3nhtfhjudmp5byvbtydnyz2j6uhlsl"
     type = "broadcast"
@@ -134,24 +148,53 @@ class PushMessage(object):
         self.appkey = appkey
         self.type = type
 
-    def sign(self, post_body, ):
-        return md5('%s%s%s%s' % (self.method, self.base_url, post_body, self.app_master_secret))
+    def sign(self, post_body, url):
+        return md5('%s%s%s%s' % (self.method, url, post_body, self.app_master_secret))
 
-    def push(self, payload, _filter):
+    def push(self, payload, _filter, device_token, description=""):
         """
         :type payload Payload
         :type _filter Filter
+        :type device_token basestring
+        :type description basestring
         """
+        if self.type == PushType.broadcast:
+            body_dict = {
+                "appkey": self.appkey,
+                "timestamp": get_time_stamp(),
+                "type": self.type,
+                "payload": payload.to_dict(),
+            }
+        else:
+            body_dict = {
+                "appkey": self.appkey,
+                "device_tokens": device_token,
+                "timestamp": get_time_stamp(),
+                "type": self.type,
+                "payload": payload.to_dict(),
+            }
+        if _filter:
+            body_dict["filter"] = _filter.to_dict()
+
+        body_dict["description"] = description
+
+        post_body = json.dumps(body_dict)
+        url = self.base_url + "?sign=" + self.sign(post_body, self.base_url)
+        print post_body
+        response = self.session.post(url, json=body_dict)
+        print response.content
+
+    def get_task_status(self, task_id):
+
+        url = "http://msg.umeng.com/api/status"
         body_dict = {
             "appkey": self.appkey,
             "timestamp": get_time_stamp(),
-            "type": self.type,
-            "payload": payload.to_dict(),
+            "task_id": task_id,
         }
-        if _filter:
-            body_dict["filter"] = _filter.to_dict()
         post_body = json.dumps(body_dict)
-        url = self.base_url + "?sign=" + self.sign(post_body)
+        url = url + "?sign=" + self.sign(post_body, url)
+        print post_body
         response = self.session.post(url, json=body_dict)
         print response.content
 

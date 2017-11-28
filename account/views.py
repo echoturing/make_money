@@ -16,6 +16,9 @@ CONTENT_TYPE_JSON = "application/json"
 def current_session_id_desc(func):
     def wrapper(request, *args, **kwargs):
         user = request.user
+        if not user.is_authenticated():
+            return HttpResponse(CommonResponse(error_code=401, error_message="用户未登录").to_json(),
+                                content_type=CONTENT_TYPE_JSON)
         user_profile = user.userprofile
         current_session_id = request.session.session_key
         if user_profile.current_session_id != "" and current_session_id != user_profile.current_session_id:
