@@ -24,6 +24,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 class GoldToMoneyRecordAdmin(admin.ModelAdmin):
     list_display = ["user", "gold", "balance", "exchange_rate", "first_created", "last_modify"]
+    list_filter = ("first_created",)
 
 
 admin_site.register(UserProfile, UserProfileAdmin)
