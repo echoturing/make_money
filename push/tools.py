@@ -151,7 +151,7 @@ class PushMessage(object):
     def sign(self, post_body, url):
         return md5('%s%s%s%s' % (self.method, url, post_body, self.app_master_secret))
 
-    def push(self, payload, _filter, device_token, description=""):
+    def push(self, payload, _filter=None, device_token="", description=""):
         """
         :type payload Payload
         :type _filter Filter
@@ -180,8 +180,8 @@ class PushMessage(object):
 
         post_body = json.dumps(body_dict)
         url = self.base_url + "?sign=" + self.sign(post_body, self.base_url)
-        print post_body
         response = self.session.post(url, json=body_dict)
+        print post_body
         print response.content
 
     def get_task_status(self, task_id):
@@ -194,7 +194,6 @@ class PushMessage(object):
         }
         post_body = json.dumps(body_dict)
         url = url + "?sign=" + self.sign(post_body, url)
-        print post_body
         response = self.session.post(url, json=body_dict)
         print response.content
 

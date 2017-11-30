@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import hashlib
 import json
 import random
@@ -90,3 +91,23 @@ class MyMultipleChoiceField(forms.MultipleChoiceField):
         elif isinstance(value, (list, tuple)):
             return value
         return json.loads(value)
+
+
+def get_current_minute(utc_now):
+    """
+    :type utc_now datetime.datetime
+    """
+    total_minutes = utc_now.hour * 60 + utc_now.minute
+    return total_minutes
+
+
+def need_push(total_minutes, cycle):
+    return not bool(total_minutes % cycle)
+
+
+def minutes_to_string_tuple(minutes):
+    hour = minutes / 60
+    minute = minutes % 60
+    hour_repr = str(hour) + "小时" if hour else ""
+    minute_repr = str(minute) + "分钟" if minute else ""
+    return hour_repr, minute_repr

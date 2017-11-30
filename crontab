@@ -1,1 +1,4 @@
-0 13 * * * /root/workspace/ENV/bin/python /root/workspace/money/manage.py exchange_gold_to_money
+# 每天13点运行 把用户金币转换成未提现余额
+0 13 * * * /root/workspace/ENV/bin/python /root/workspace/money/manage.py exchange_gold_to_money &>>exchange_gold_to_money.log
+# 每分钟运行看是否需要推送金币周期配置
+* * * * * /root/workspace/ENV/bin/python /root/workspace/money/manage.py push_ad_config &>>push_ad_config.log

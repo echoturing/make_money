@@ -70,6 +70,12 @@ class GlobalShieldConfig(models.Model):
         verbose_name = "全局屏蔽设置"
         verbose_name_plural = "全局屏蔽设置"
 
+    @property
+    def area_list(self):
+        if self.shield_area == "":
+            return []
+        return json.loads(self.shield_area)
+
     def comma_split(self):
         if self.shield_area == "" or self.shield_area is None:
             return ""
@@ -91,6 +97,9 @@ class ChannelShieldConfig(models.Model):
     class Meta:
         verbose_name = "渠道屏蔽设置"
         verbose_name_plural = "渠道屏蔽设置"
+
+    def need_published(self):
+        return self.start_time <= timezone.now() <= self.end_time
 
     def get_status(self):
         now = timezone.now()
@@ -160,7 +169,7 @@ REWARD_CONDITION_CHOICE = (
 
 class RewardCondition(models.Model):
     typ = models.CharField(verbose_name="类型", max_length=50, choices=REWARD_CONDITION_CHOICE)
-    last = models.IntegerField(verbose_name="时长", default=10)
+    last = models.IntegerField(verbose_name="时长(秒)", default=10)
     first_created = models.DateTimeField(verbose_name="日期", auto_now_add=True)
     last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
 

@@ -92,10 +92,12 @@ def get_ad_config_view(request):
     gold_configs = get_gold_config()
     read_reward_condition, download_reward_condition = get_reward_condition_json()
     reward_cycle_count = get_reward_cycle_count_json()
+    reward_cycle = get_reward_cycle_json()
     return HttpResponse(
         CommonResponse(error_code=0, error_message="", data={
             "ad_policies": ad_policies,  # 红包位置
             "gold_configs": gold_configs,  # 金币设置(广告源,广告类型,金币数)
+            "reward_cycle": reward_cycle,
             "reward_cycle_count": reward_cycle_count,  # 周期红包数
             "read_reward_condition": read_reward_condition,  # 阅读红包领取条件
             "download_reward_condition": download_reward_condition,  # 下载红包领取条件

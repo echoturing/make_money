@@ -12,6 +12,8 @@ from account.models import UserProfile, GoldToMoneyRecord, GetGoldRecord
 from ad.service import get_latest_exchange, build_exchange
 from django.utils import timezone
 
+from push.tools import Body, DisplayType, AfterOpen, Payload, unicast_push_manager
+
 """
 每天13点执行,把昨天0点到24点获取的金币给转换了
 """
@@ -28,7 +30,6 @@ class Command(BaseCommand):
         start_time = yesterday.replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(
             hours=8)  # utc时间还得减少8小时
         end_time = start_time + datetime.timedelta(days=1)
-        print start_time, end_time
         for user_profile_id in user_profile_ids:
             user_profile_id = user_profile_id[0]
             with transaction.atomic():
@@ -48,3 +49,18 @@ class Command(BaseCommand):
                     user_profile.gold -= yesterday_user_golds  # 金币减去获取的
                     user_profile.total_get += balance  # 总数增加
                     user_profile.save()
+                    self.push_to_user(user_profile)
+
+    @staticmethod
+    def push_to_user(user_profile):
+        device_token = user_profile.device_token
+        ticker = "您昨天获得的金币已折算成现金,今天继续赚钱哦~"
+        title = ticker
+        text = " "
+        builder_id = 3
+        body = Body(payload_display_type=DisplayType.notification, after_open=AfterOpen.go_app, ticker=ticker,
+                    title=title,
+                    text=text, builder_id=builder_id)
+
+        payload = Payload(display_type=DisplayType.notification, body=body)
+        unicast_push_manager.push(payload, device_token=device_token)

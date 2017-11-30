@@ -8,9 +8,6 @@ from django.db import models
 
 
 # Create your models here.
-
-
-
 class CashChannel(models.Model):
     name = models.CharField(verbose_name="提现渠道名字", max_length=100)
     first_created = models.DateTimeField(verbose_name="日期", auto_now_add=True)

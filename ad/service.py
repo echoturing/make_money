@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
+from django.utils import timezone
 
 from ad.models import AdPolicy, GoldConfig, RewardCycleCount, ExchangeRate, GlobalShieldConfig, ChannelShieldConfig, \
     RewardCycle, RewardCondition, REWARD_CONDITION_CHOICE
 from money.tool import get_obj_dict
+from push.tools import Filter, Payload, DisplayType, Body, AfterOpen
 
 
 def build_ad_policy(ad_policy):
@@ -124,5 +126,9 @@ def get_reward_condition_json():
 
 
 def get_current_filter():
-    global_shield_config_dict, channel_shield_config_dict_list = get_shield_config()
+    provinces = GlobalShieldConfig.objects.first().area_list
 
+    channels = [build_channel_shield_config(channel_shield_config) for channel_shield_config in
+                ChannelShieldConfig.objects.all() if
+                channel_shield_config.need_published]
+    return Filter(channels=channels, provinces=provinces)
