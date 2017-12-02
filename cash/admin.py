@@ -7,9 +7,12 @@ from django import forms
 from django.contrib import admin
 
 # Register your models here.
+from django.db import transaction
+
 from account.admin import admin_site
 from cash.models import CashCategory, CashChannel, CashRecord, ACCEPT, REFUSED
 from money.tool import MyMultipleChoiceField
+from push.tools import Body, DisplayType, Payload, unicast_push_manager, AfterOpen
 
 
 class CashChannelAdmin(admin.ModelAdmin):
@@ -43,7 +46,22 @@ class CashCategoryAdmin(admin.ModelAdmin):
 
 
 def make_accept(modeladmin, request, queryset):
-    queryset.update(status=ACCEPT)
+    for cash_record in queryset:
+        with transaction.atomic():
+            cash_record.status = ACCEPT
+            cash_record.save()
+            user_profile = cash_record.user.userprofile
+            device_token = user_profile.device_token
+            ticker = "您的提现金额{},已打款,您注意查收~".format(cash_record.money / 100.0)
+            title = ticker
+            text = " "
+
+            builder_id = 2
+            body = Body(payload_display_type=DisplayType.notification, after_open=AfterOpen.go_app, ticker=ticker,
+                        title=title,
+                        text=text, builder_id=builder_id)
+            payload = Payload(display_type=DisplayType.notification, body=body)
+            unicast_push_manager.push(payload, device_token=device_token)
 
 
 make_accept.short_description = "全部通过"
