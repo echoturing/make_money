@@ -7,6 +7,8 @@ import uuid
 
 import datetime
 import re
+
+import pytz
 import requests
 from django.conf import settings
 from django import forms
@@ -111,3 +113,18 @@ def minutes_to_string_tuple(minutes):
     hour_repr = str(hour) + "小时" if hour else ""
     minute_repr = str(minute) + "分钟" if minute else ""
     return hour_repr, minute_repr
+
+
+def get_yesterday_range_of_shanghai_tz(utc_datetime):
+    """
+    获取传入的utc时间的time_zone的昨天的range
+    比如  utc时间是2017-12-02 01:00:00+00:00
+    返回就是   2017-12-01 09:00:00+08:00
+    """
+    naive_today = utc_datetime.astimezone(tz=pytz.timezone(settings.TIME_ZONE)).date()
+    naive_today = datetime.datetime.combine(naive_today, datetime.time())
+    naive_yesterday = naive_today - datetime.timedelta(days=1)
+    start_time = naive_yesterday
+    start_time_utc = pytz.timezone(settings.TIME_ZONE).localize(start_time, is_dst=None)
+    end_time_utc = start_time_utc + datetime.timedelta(days=1)
+    return start_time_utc, end_time_utc

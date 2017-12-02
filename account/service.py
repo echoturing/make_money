@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
-from account.models import UserProfile
+from account.models import UserProfile, GetGoldRecord
 from money.tool import get_rand_int, send_sms, get_obj_dict
 
 EXPIRE = 600
@@ -115,3 +115,7 @@ def get_user_info(user_id):
     """
     user = User.objects.select_related().get(id=user_id)
     return build_user_info(user)
+
+
+def create_get_gold_record(user, gold):
+    return GetGoldRecord.objects.create(user=user, gold=gold)

@@ -12,6 +12,7 @@ from account.models import UserProfile, GoldToMoneyRecord, GetGoldRecord
 from ad.service import get_latest_exchange, build_exchange
 from django.utils import timezone
 
+from money.tool import get_yesterday_range_of_shanghai_tz
 from push.tools import Body, DisplayType, AfterOpen, Payload, unicast_push_manager
 
 """
@@ -26,18 +27,16 @@ class Command(BaseCommand):
         user_profile_ids = UserProfile.objects.all().values_list("id")
         exchange_rate = get_latest_exchange()
         exchange_dict = build_exchange(exchange_rate)
-        yesterday = timezone.now() - datetime.timedelta(days=1)
-        start_time = yesterday.replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(
-            hours=8)  # utc时间还得减少8小时
-        end_time = start_time + datetime.timedelta(days=1)
+        start_time, end_time = get_yesterday_range_of_shanghai_tz(timezone.now())
         for user_profile_id in user_profile_ids:
             user_profile_id = user_profile_id[0]
             with transaction.atomic():
                 user_profile = UserProfile.objects.select_for_update().get(id=user_profile_id)
-                yesterday_user_gold_records = list(GetGoldRecord.objects.filter(user=user_profile.user,
-                                                                                first_created__range=(
-                                                                                    start_time, end_time),
-                                                                                exchanged=False))  # 未兑换的
+                yesterday_user_gold_records = GetGoldRecord.objects.filter(user=user_profile.user,
+                                                                           first_created__range=(
+                                                                               start_time, end_time),
+                                                                           exchanged=False)  # 未兑换的
+
                 yesterday_user_golds = sum((record.gold for record in yesterday_user_gold_records))
 
                 if yesterday_user_golds > 0:
@@ -50,6 +49,7 @@ class Command(BaseCommand):
                     user_profile.total_get += balance  # 总数增加
                     user_profile.save()
                     self.push_to_user(user_profile)
+                    yesterday_user_gold_records.update(exchanged=True)
 
     @staticmethod
     def push_to_user(user_profile):

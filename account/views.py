@@ -5,9 +5,12 @@ import json
 from functools import update_wrapper
 
 from django.contrib.auth import authenticate, login, logout
+from django.db import transaction
 from django.http import HttpResponse, HttpRequest
 
 from account import service
+from account.service import create_get_gold_record
+from cash import service as cash_service
 from money.tool import CommonResponse
 
 CONTENT_TYPE_JSON = "application/json"
@@ -160,4 +163,23 @@ def user_info(request):
 
     data = service.get_user_info(user.id)
     return HttpResponse(CommonResponse(error_code=0, error_message="", data=data).to_json(),
+                        content_type=CONTENT_TYPE_JSON)
+
+
+def earn_gold(request):
+    """
+    用户获取金币
+    """
+    param = json.loads(request.body)
+    user = request.user
+    if not user.is_authenticated():
+        return HttpResponse(CommonResponse(error_code=401, error_message="用户未登录").to_json(),
+                            content_type=CONTENT_TYPE_JSON)
+    gold = param["gold"]
+    with transaction.atomic():
+        # 增加获取记录
+        create_get_gold_record(user=user, gold=gold)
+        # 增加金币并推送
+        cash_service.earn_gold(gold=gold, user=user)
+    return HttpResponse(CommonResponse(error_code=0, error_message="", data={}).to_json(),
                         content_type=CONTENT_TYPE_JSON)

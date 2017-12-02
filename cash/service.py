@@ -25,7 +25,7 @@ def generate_cash_record(user, money, phone, real_name, device_id, identity, mac
         return 0, "提现记录生成成功"
 
 
-def get_gold(gold, user=None, user_profile=None):
+def earn_gold(gold, user=None, user_profile=None):
     """
     获取金币的时候调用,除了金币增加以外,还会推送一条消息给别人
     :type user_profile UserProfile
