@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 from account.models import UserProfile, GetGoldRecord
-from money.tool import get_rand_int, send_sms, get_obj_dict
+from ad.service import get_reward_cycle_json
+from money.tool import get_rand_int, send_sms, get_obj_dict, get_current_second
+from django_redis import get_redis_connection
 
+cache = get_redis_connection("default")
 EXPIRE = 600
 
 TYPE_SIGN_UP = "SIGN_UP"
@@ -117,5 +120,52 @@ def get_user_info(user_id):
     return build_user_info(user)
 
 
-def create_get_gold_record(user, gold):
-    return GetGoldRecord.objects.create(user=user, gold=gold)
+def create_get_gold_record(user, gold, group_id):
+    return GetGoldRecord.objects.create(user=user, gold=gold, group_id=group_id)
+
+
+JUDGE_KEY_PRE_FIX = "judge_key_pre_fix_"
+
+
+def judge_in_set(user, group_id):
+    """
+    判断这个group_id是不是这个用户已经领取过了
+    """
+    redis_key = JUDGE_KEY_PRE_FIX + str(user.id)
+    in_set = cache.sismember(redis_key, group_id)
+    return in_set
+
+
+def add_judge(user, group_id, expire):
+    """
+    把group_id弄进去,并且设置新的过期时间
+    """
+    redis_key = JUDGE_KEY_PRE_FIX + str(user.id)
+    cache.sadd(redis_key, group_id)
+    cache.expire(redis_key, expire)
+
+
+def get_judge_set(user):
+    """
+    获取用户的已领取的group_id
+    """
+    redis_key = JUDGE_KEY_PRE_FIX + str(user.id)
+    print dir(cache)
+    result = cache.smembers(redis_key)
+    if result:
+        return list(map(lambda x: int(x), result))
+    return []
+
+
+def get_current_expire():
+    """
+    返回当前需要设置的过期时间
+    秒
+    """
+    reward_cycle_json = get_reward_cycle_json()
+    cycle_minutes = reward_cycle_json["cycle"]
+    cycle_seconds = cycle_minutes * 60
+    utc_now = timezone.now()
+    current_seconds = get_current_second(utc_now)
+    expire = cycle_seconds - (current_seconds % cycle_seconds)
+    return expire

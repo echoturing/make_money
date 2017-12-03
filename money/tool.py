@@ -103,6 +103,11 @@ def get_current_minute(utc_now):
     return total_minutes
 
 
+def get_current_second(utc_now):
+    total_second = utc_now.hour * 3600 + utc_now.minute * 60 + utc_now.second
+    return total_second
+
+
 def need_push(total_minutes, cycle):
     return not bool(total_minutes % cycle)
 

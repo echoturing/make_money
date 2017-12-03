@@ -9,7 +9,7 @@ from django.db import transaction
 from django.http import HttpResponse, HttpRequest
 
 from account import service
-from account.service import create_get_gold_record
+from account.service import create_get_gold_record, judge_in_set, add_judge, get_judge_set, get_current_expire
 from cash import service as cash_service
 from money.tool import CommonResponse
 
@@ -162,6 +162,7 @@ def user_info(request):
                             content_type=CONTENT_TYPE_JSON)
 
     data = service.get_user_info(user.id)
+    data["group_id_list"] = get_judge_set(user)
     return HttpResponse(CommonResponse(error_code=0, error_message="", data=data).to_json(),
                         content_type=CONTENT_TYPE_JSON)
 
@@ -176,10 +177,19 @@ def earn_gold(request):
         return HttpResponse(CommonResponse(error_code=401, error_message="用户未登录").to_json(),
                             content_type=CONTENT_TYPE_JSON)
     gold = param["gold"]
+    group_id = param["group_id"]
+    # 看看有没有领取过
+    in_set = judge_in_set(user, group_id)
+    if in_set:
+        return HttpResponse(CommonResponse(error_code=401, error_message="该广告位金币已经领取").to_json(),
+                            content_type=CONTENT_TYPE_JSON)
+
     with transaction.atomic():
         # 增加获取记录
-        create_get_gold_record(user=user, gold=gold)
+        create_get_gold_record(user=user, gold=gold, group_id=group_id)
         # 增加金币并推送
         cash_service.earn_gold(gold=gold, user=user)
+        expire = get_current_expire()
+        add_judge(user, group_id, expire)
     return HttpResponse(CommonResponse(error_code=0, error_message="", data={}).to_json(),
                         content_type=CONTENT_TYPE_JSON)

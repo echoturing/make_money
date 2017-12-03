@@ -43,6 +43,7 @@ class GetGoldRecord(models.Model):
     # ad_source = models.CharField(verbose_name="广告源")
     # ad_type = models.CharField(verbose_name="广告类型")
     # ad_id = models.CharField(verbose_name="广告ID")
+    group_id = models.IntegerField(verbose_name="group_id", default=0)
     exchanged = models.BooleanField(verbose_name="是否已转换", default=False)
     first_created = models.DateTimeField(verbose_name="日期", auto_now_add=True)
     last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)

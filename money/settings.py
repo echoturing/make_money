@@ -133,8 +133,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'project_static')
 
 CACHES = {
     'default': {
-        'BACKEND': 'redis_cache.RedisCache',
+        'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': 'localhost:6379',
+        'OPTIONS': {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     },
 }
 
