@@ -41,3 +41,10 @@ def generate_cash_record(request):
                                                  device_brand=device_brand)
     return HttpResponse(CommonResponse(error_code=code, error_message=message).to_json(),
                         content_type=CONTENT_TYPE_JSON)
+
+
+def get_cash_config_view(request):
+    cash_category_list = service.get_cash_config()
+    return HttpResponse(
+        CommonResponse(error_code=0, error_message="", data={"cash_category_list": cash_category_list}).to_json(),
+        content_type=CONTENT_TYPE_JSON)

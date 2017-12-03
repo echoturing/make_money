@@ -44,6 +44,9 @@ class CashCategory(models.Model):
     def __unicode__(self):
         return self.channel.name
 
+    def money_type_value(self):
+        return [i[0] for i in self.money_type.all().values_list("gold")]
+
     def money_type_display(self):
         return ",".join((str(i[0]) for i in self.money_type.all().values_list("gold")))
 
