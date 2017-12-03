@@ -40,9 +40,12 @@ class GoldToMoneyRecord(models.Model):
 class GetGoldRecord(models.Model):
     user = models.ForeignKey(User, verbose_name="用户")
     gold = models.IntegerField(verbose_name="获取金币", default=0)
+    # ad_source = models.CharField(verbose_name="广告源")
+    # ad_type = models.CharField(verbose_name="广告类型")
+    # ad_id = models.CharField(verbose_name="广告ID")
     exchanged = models.BooleanField(verbose_name="是否已转换", default=False)
-    first_created = models.DateTimeField(verbose_name="日期", )
-    last_modify = models.DateTimeField(verbose_name="修改时间", )
+    first_created = models.DateTimeField(verbose_name="日期", auto_now_add=True)
+    last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
 
     class Meta:
         verbose_name = "金币获取记录"
