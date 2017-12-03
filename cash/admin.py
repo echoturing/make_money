@@ -10,7 +10,7 @@ from django.contrib import admin
 from django.db import transaction
 
 from account.admin import admin_site
-from cash.models import CashCategory, CashChannel, CashRecord, ACCEPT, REFUSED
+from cash.models import CashCategory, CashChannel, CashRecord, ACCEPT, REFUSED, CashMoneyCategory
 from money.tool import MyMultipleChoiceField
 from push.tools import Body, DisplayType, Payload, unicast_push_manager, AfterOpen
 
@@ -26,23 +26,22 @@ CASH_TYPE_CHOICE = (
 )
 
 
-class CashCategoryAdminForm(forms.ModelForm):
-    money_type = MyMultipleChoiceField(choices=CASH_TYPE_CHOICE, widget=forms.CheckboxSelectMultiple, label="提现金额")
-    model = CashCategory
+# class CashCategoryAdminForm(forms.ModelForm):
+#     money_type = MyMultipleChoiceField(choices=CASH_TYPE_CHOICE, widget=forms.CheckboxSelectMultiple, label="提现金额")
+#     model = CashCategory
+#
+
+class CashMoneyCategoryAdmin(admin.ModelAdmin):
+    pass
+
+
+admin_site.register(CashMoneyCategory, CashMoneyCategoryAdmin)
 
 
 class CashCategoryAdmin(admin.ModelAdmin):
-    list_display = ["first_created", "channel", "money_type_comma", "edit_by", "last_modify"]
+    list_display = ["first_created", "channel", "money_type_display", "edit_by", "last_modify"]
     readonly_fields = ["edit_by"]
-    form = CashCategoryAdminForm
-
-    def save_model(self, request, obj, form, change):
-        obj.edit_by = request.user.username
-        if isinstance(obj.money_type, (list, tuple)):
-            obj.money_type = json.dumps(obj.money_type)
-        elif obj.money_type == "":
-            obj.money_type = "[]"
-        super(CashCategoryAdmin, self).save_model(request, obj, form, change)
+    filter_horizontal = ("money_type",)
 
 
 def make_accept(modeladmin, request, queryset):
