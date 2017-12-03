@@ -162,8 +162,8 @@ class RewardCycleCount(models.Model):
 
 
 REWARD_CONDITION_CHOICE = (
-    ('read_last', '阅读时长'),
-    ('experience_last', '下载应用体验时长'),
+    ('read_last', 'H5'),
+    ('experience_last', '下载'),
 )
 
 
