@@ -34,7 +34,7 @@ def earn_gold(gold, user=None, user_profile=None):
     :type user User
     """
     if user:
-        user_profile = user.user_profile
+        user_profile = user.userprofile
     user_profile.gold += gold
     user_profile.save()
     device_token = user_profile.device_token
