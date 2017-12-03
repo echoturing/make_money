@@ -25,5 +25,6 @@ def statistics(request):
     update_value = param.get("update_value")
     statistics_record_event(today, channel=channel, version=version, ad_source=ad_source, ad_type=ad_type,
                             update_key=update_key, update_value=update_value)
+
     return HttpResponse(CommonResponse(error_code=0, error_message="").to_json(),
                         content_type=CONTENT_TYPE_JSON)
