@@ -28,7 +28,7 @@ class GoldToMoneyRecordAdmin(admin.ModelAdmin):
 
 
 class GetGoldRecordAdmin(admin.ModelAdmin):
-    list_display = ["user", "gold", "exchanged", "first_created"]
+    list_display = ["user", "gold", "exchanged", "group_id", "first_created"]
 
 
 admin_site.register(GetGoldRecord, GetGoldRecordAdmin)
