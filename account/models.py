@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import json
+
 from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
+from django.utils.html import format_html, format_html_join
+
 from ad.models import ExchangeRate
 
 
@@ -54,3 +58,31 @@ class GetGoldRecord(models.Model):
         indexes = [
             models.Index(fields=['user', 'first_created']),
         ]
+
+
+class UserFeedback(models.Model):
+    User = models.ForeignKey(User, verbose_name="用户", default="")
+    description = models.TextField(verbose_name="问题描述", default="")
+    pictures = models.TextField(verbose_name="图片", default="")
+    contact = models.TextField(verbose_name="联系方式", default="")
+    phone = models.CharField(verbose_name="手机号", max_length=50, default="")
+
+    first_created = models.DateTimeField(verbose_name="日期", auto_now_add=True)
+    last_modify = models.DateTimeField(verbose_name="修改时间", auto_now=True)
+
+    class Meta:
+        verbose_name = "用户反馈"
+        verbose_name_plural = "用户反馈"
+
+    def image_list(self):
+        if self.picture_list:
+            return format_html_join(format_html('<br/>'), '<a href="{}">{}</a>', ((i, i) for i in self.picture_list))
+        return ""
+
+    @property
+    def picture_list(self):
+        if self.pictures == "":
+            return []
+        return json.loads(self.pictures)
+
+    image_list.short_description = "图片"

@@ -9,6 +9,7 @@ from django.db import transaction
 from django.http import HttpResponse, HttpRequest
 
 from account import service
+from account.models import UserFeedback
 from account.service import create_get_gold_record, judge_in_set, add_judge, get_judge_set, get_current_expire
 from cash import service as cash_service
 from money.tool import CommonResponse
@@ -191,5 +192,19 @@ def earn_gold(request):
         cash_service.earn_gold(gold=gold, user=user)
         expire = get_current_expire()
         add_judge(user, group_id, expire)
+    return HttpResponse(CommonResponse(error_code=0, error_message="", data={}).to_json(),
+                        content_type=CONTENT_TYPE_JSON)
+
+
+def feedback(request):
+    param = json.loads(request.body)
+    user = request.user
+    description = param.get("description")
+    pictures = param.get("pictures", [])
+    contact = param.get("contact")
+    phone = param.get("phone")
+    UserFeedback.objects.create(user=user, description=description, pictures=json.dumps(pictures), contact=contact,
+                                phone=phone)
+
     return HttpResponse(CommonResponse(error_code=0, error_message="", data={}).to_json(),
                         content_type=CONTENT_TYPE_JSON)

@@ -14,5 +14,7 @@ urlpatterns = [
     url(r'^get_user_info/$', user_info, name="get_user_info"),
     url(r'^earn_gold/$', earn_gold, name="get_gold"),
 
+    url(r'^feedback/$', feedback, name="feedback"),
+
     url(r'^user/$', get_user),
 ]
