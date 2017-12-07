@@ -6,7 +6,8 @@ from django.utils import timezone
 
 from account.models import UserProfile, GetGoldRecord
 from ad.service import get_reward_cycle_json
-from money.tool import get_rand_int, send_sms, get_obj_dict, get_current_second
+from message_service.service import send_sms
+from money.tool import get_rand_int, get_obj_dict, get_current_second
 from django_redis import get_redis_connection
 
 cache = get_redis_connection("default")
@@ -26,8 +27,7 @@ def get_reset_password_token(phone):
     key = RESET_PASSWORD_PREFIX + phone
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
-    content = "您的验证码是:{},10分钟内有效".format(value)
-    response = send_sms(phone, content)
+    response = send_sms(phone, str(value))
     return response
 
 
@@ -48,8 +48,8 @@ def get_sign_up_token(phone):
     key = SIGN_UP_PREFIX + phone
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
-    content = "您的验证码是:{},10分钟内有效".format(value)
-    response = send_sms(phone, content)
+
+    response = send_sms(phone, str(value))
     return response
 
 

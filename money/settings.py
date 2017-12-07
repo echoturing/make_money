@@ -156,3 +156,5 @@ RAVEN_CONFIG = {
     # release based on the git info.
     'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
 }
+
+MESSAGE_USE = "1"  # 1 or 2     1 represent early one
