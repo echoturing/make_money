@@ -38,7 +38,7 @@ def earn_gold(gold, user=None, user_profile=None):
     user_profile.gold += gold
     user_profile.save()
     device_token = user_profile.device_token
-    ticker = "点击咨询奖励,{}金币已到手".format(gold)
+    ticker = "点击资讯奖励,{}金币已到手".format(gold)
     title = ticker
     text = " "
 

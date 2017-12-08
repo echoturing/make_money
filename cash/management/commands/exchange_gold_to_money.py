@@ -40,7 +40,7 @@ class Command(BaseCommand):
                 yesterday_user_golds = sum((record.gold for record in yesterday_user_gold_records))
 
                 if yesterday_user_golds > 0:
-                    balance = int(1.0 * exchange_rate.money / exchange_rate.gold_count * yesterday_user_golds)
+                    balance = round(1.0 * exchange_rate.money / exchange_rate.gold_count * yesterday_user_golds, 3)
 
                     GoldToMoneyRecord.objects.create(user_id=user_profile.user_id, gold=yesterday_user_golds,
                                                      balance=balance, exchange_rate=json.dumps(exchange_dict))
