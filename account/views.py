@@ -54,14 +54,22 @@ def sign_up(request):
     token = param["token"]
     password = param["password"]
     device_token = param["device_token"]
-    code = 0
     success = service.validate_token(phone, token, service.TYPE_SIGN_UP)
     if success:
         _, code, message = service.actual_sign_up(phone, password, device_token)
         if message:
             code = 0
-        return HttpResponse(CommonResponse(error_code=code, error_message=message).to_json(),
-                            content_type=CONTENT_TYPE_JSON)
+        user = authenticate(username=phone, password=password)
+        login(request, user)
+        if not request.session.session_key:
+            request.session.save()
+        session_id = request.session.session_key
+        user.userprofile.device_token = device_token
+        user.userprofile.current_session_id = session_id
+        user.userprofile.save()
+        return HttpResponse(
+            CommonResponse(error_code=code, error_message=message, data={"sessionid": session_id}).to_json(),
+            content_type=CONTENT_TYPE_JSON)
     message = "验证码错误"
     code = 401
     return HttpResponse(CommonResponse(error_code=code, error_message=message).to_json(),
