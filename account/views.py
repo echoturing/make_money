@@ -57,16 +57,15 @@ def sign_up(request):
     success = service.validate_token(phone, token, service.TYPE_SIGN_UP)
     if success:
         user, code, message = service.actual_sign_up(phone, password, device_token)
-        if message:
-            code = 0
-        user = authenticate(username=phone, password=password)
-        login(request, user)
-        if not request.session.session_key:
-            request.session.save()
-        session_id = request.session.session_key
-        user.userprofile.device_token = device_token
-        user.userprofile.current_session_id = session_id
-        user.userprofile.save()
+        if code == 0:
+            user = authenticate(username=phone, password=password)
+            login(request, user)
+            if not request.session.session_key:
+                request.session.save()
+            session_id = request.session.session_key
+            user.userprofile.device_token = device_token
+            user.userprofile.current_session_id = session_id
+            user.userprofile.save()
         return HttpResponse(
             CommonResponse(error_code=code, error_message=message, data={"sessionid": session_id}).to_json(),
             content_type=CONTENT_TYPE_JSON)
