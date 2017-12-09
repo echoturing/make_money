@@ -27,7 +27,7 @@ def get_reset_password_token(phone):
     key = RESET_PASSWORD_PREFIX + phone
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
-    response = send_sms(phone, str(value))
+    response = send_sms(phone, unicode(value))
     return response
 
 
@@ -49,7 +49,7 @@ def get_sign_up_token(phone):
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
 
-    response = send_sms(phone, str(value))
+    response = send_sms(phone, unicode(value))
     return response
 
 

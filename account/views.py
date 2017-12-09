@@ -56,7 +56,7 @@ def sign_up(request):
     device_token = param["device_token"]
     success = service.validate_token(phone, token, service.TYPE_SIGN_UP)
     if success:
-        _, code, message = service.actual_sign_up(phone, password, device_token)
+        user, code, message = service.actual_sign_up(phone, password, device_token)
         if message:
             code = 0
         user = authenticate(username=phone, password=password)
