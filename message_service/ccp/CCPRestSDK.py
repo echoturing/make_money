@@ -72,11 +72,11 @@ class REST:
 
     def log(self, url, body, data):
         print('********************************')
-        print (url);
+        print (url)
         print('********************************')
-        print (body);
+        print (body)
         print('********************************')
-        print (data);
+        print (data)
         print('********************************')
 
     # 创建子账号
