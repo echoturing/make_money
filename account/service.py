@@ -150,7 +150,6 @@ def get_judge_set(user):
     获取用户的已领取的group_id
     """
     redis_key = JUDGE_KEY_PRE_FIX + str(user.id)
-    print dir(cache)
     result = cache.smembers(redis_key)
     if result:
         return list(map(lambda x: int(x), result))
