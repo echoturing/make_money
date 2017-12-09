@@ -71,11 +71,11 @@ class REST:
         self.AppId = AppId;
 
     def log(self, url, body, data):
-        print('这是请求的URL：')
+        print('********************************：')
         print (url);
-        print('这是请求包体:')
+        print('********************************:')
         print (body);
-        print('这是响应包体:')
+        print('********************************:')
         print (data);
         print('********************************')
 
