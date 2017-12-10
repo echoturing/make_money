@@ -68,7 +68,7 @@ def need_shield(channel, city):
     if city in global_shield_config.area_list:
         return True
     channel_shield_config = ChannelShieldConfig.objects.filter(channel=channel).first()
-    return bool(channel_shield_config) and channel_shield_config.need_published
+    return bool(channel_shield_config) and channel_shield_config.need_published()
 
 
 def get_shield_config():
