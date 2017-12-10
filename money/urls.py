@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^ad/', include('ad.urls')),
     url(r'^cash/', include('cash.urls')),
     url(r'^statistics/', include('statistics.urls')),
+    url(r'^version/', include('version.urls')),
 ]

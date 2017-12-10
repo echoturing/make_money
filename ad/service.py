@@ -60,6 +60,17 @@ def build_channel_shield_config(config):
     return get_obj_dict(config, keys)
 
 
+def need_shield(channel, city):
+    """
+    看是否需要屏蔽
+    """
+    global_shield_config = GlobalShieldConfig.objects.first()
+    if city in global_shield_config.area_list:
+        return True
+    channel_shield_config = ChannelShieldConfig.objects.first(channel=channel)
+    return channel_shield_config and channel_shield_config.need_published
+
+
 def get_shield_config():
     """
     获取最新的屏蔽策略

@@ -9,11 +9,11 @@ from version.models import Version, UpdateConfig
 
 
 class VersionAdmin(admin.ModelAdmin):
-    list_display = ["version_num", "first_created", "last_modify"]
+    list_display = ["version_num", "version_name", "first_created", "last_modify"]
 
 
 class UpdateConfigAdmin(admin.ModelAdmin):
-    list_display = ["from_version", "to_version", "edit_by", "first_created", "last_modify"]
+    list_display = ["from_version", "to_version", "edit_by", "is_force", "first_created", "last_modify"]
     readonly_fields = ["edit_by", ]
 
     def save_model(self, request, obj, form, change):

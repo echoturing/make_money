@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
 from account.views import CONTENT_TYPE_JSON
-from ad.service import get_ad_policy, get_gold_config, get_shield_config, get_latest_exchange_rate_json, \
-    get_reward_cycle_json, get_reward_cycle_count_json, get_reward_condition_json
+from ad.service import get_ad_policy, get_gold_config, get_latest_exchange_rate_json, \
+    get_reward_cycle_json, get_reward_cycle_count_json, get_reward_condition_json, need_shield, get_shield_config
 from money.tool import CommonResponse
 
 
@@ -40,6 +42,20 @@ def get_shield_config_view(request):
         CommonResponse(error_code=0, error_message="", data={"global_shield_config": global_shield_config,
                                                              "channel_shield_config_list": channel_shield_config_list,
                                                              }).to_json(),
+        content_type=CONTENT_TYPE_JSON
+    )
+
+
+def need_shield_view(request):
+    """
+    /ad/need_shield/
+    """
+    param = json.loads(request.body)
+    channel = param.get("channel")
+    city = param.get("city")
+    need = need_shield(channel, city)
+    return HttpResponse(
+        CommonResponse(error_code=0, error_message="", data={"need_shield": need}).to_json(),
         content_type=CONTENT_TYPE_JSON
     )
 
