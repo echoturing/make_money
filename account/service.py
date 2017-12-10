@@ -120,6 +120,14 @@ def get_user_info(user_id):
     return build_user_info(user)
 
 
+def get_user_by_username(username):
+    try:
+        user = User.objects.get(username=username)
+        return user
+    except ObjectDoesNotExist:
+        return None
+
+
 def create_get_gold_record(user, gold, group_id):
     return GetGoldRecord.objects.create(user=user, gold=gold, group_id=group_id)
 

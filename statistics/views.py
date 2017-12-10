@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from account.views import CONTENT_TYPE_JSON
 from money.tool import CommonResponse
-from statistics.service import statistics_record_event
+from statistics.service import statistics_record_event, t_statistics_record_event
 
 
 def statistics(request):
@@ -25,6 +25,20 @@ def statistics(request):
     update_value = param.get("update_value")
     statistics_record_event(today, channel=channel, version=version, ad_source=ad_source, ad_type=ad_type,
                             update_key=update_key, update_value=update_value)
+
+    return HttpResponse(CommonResponse(error_code=0, error_message="").to_json(),
+                        content_type=CONTENT_TYPE_JSON)
+
+
+def tstatistics(request):
+    param = json.loads(request.body)
+    today = timezone.now()
+    ad_source = param.get("ad_source")
+    ad_position = param.get("ad_position")
+    update_key = param.get("update_key")
+    update_value = param.get("update_value")
+    t_statistics_record_event(today, ad_source=ad_source, ad_position=ad_position, update_key=update_key,
+                              update_value=update_value)
 
     return HttpResponse(CommonResponse(error_code=0, error_message="").to_json(),
                         content_type=CONTENT_TYPE_JSON)

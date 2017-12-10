@@ -10,7 +10,8 @@ from django.http import HttpResponse, HttpRequest
 
 from account import service
 from account.models import UserFeedback
-from account.service import create_get_gold_record, judge_in_set, add_judge, get_judge_set, get_current_expire
+from account.service import create_get_gold_record, judge_in_set, add_judge, get_judge_set, get_current_expire, \
+    get_user_by_username
 from cash import service as cash_service
 from money.tool import CommonResponse
 
@@ -40,9 +41,13 @@ def sign_up_token(request):
     """
     param = json.loads(request.body)
     phone = param["phone"]
-    result = service.get_sign_up_token(phone)
-    return HttpResponse(CommonResponse(error_code=0, error_message="", data=result).to_json(),
-                        content_type=CONTENT_TYPE_JSON)
+    user = get_user_by_username(phone)
+    if not user:
+        result = service.get_sign_up_token(phone)
+        return HttpResponse(CommonResponse(error_code=0, error_message="", data=result).to_json(),
+                            content_type=CONTENT_TYPE_JSON)
+    else:
+        return HttpResponse(CommonResponse(error_code=101, error_message="账号已存在").to_json())
 
 
 def sign_up(request):
