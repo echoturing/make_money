@@ -135,29 +135,29 @@ def create_get_gold_record(user, gold, group_id):
 JUDGE_KEY_PRE_FIX = "judge_key_pre_fix_"
 
 
-def judge_in_set(user, group_id):
+def judge_in_set(user, group_id, reward_cycle):
     """
     判断这个group_id是不是这个用户已经领取过了
     """
-    redis_key = JUDGE_KEY_PRE_FIX + str(user.id)
+    redis_key = JUDGE_KEY_PRE_FIX + str(user.id) + "_" + str(reward_cycle.id)
     in_set = cache.sismember(redis_key, group_id)
     return in_set
 
 
-def add_judge(user, group_id, expire):
+def add_judge(user, group_id, expire, reward_cycle):
     """
     把group_id弄进去,并且设置新的过期时间
     """
-    redis_key = JUDGE_KEY_PRE_FIX + str(user.id)
+    redis_key = JUDGE_KEY_PRE_FIX + str(user.id) + "_" + str(reward_cycle.id)
     cache.sadd(redis_key, group_id)
     cache.expire(redis_key, expire)
 
 
-def get_judge_set(user):
+def get_judge_set(user, reward_cycle):
     """
     获取用户的已领取的group_id
     """
-    redis_key = JUDGE_KEY_PRE_FIX + str(user.id)
+    redis_key = JUDGE_KEY_PRE_FIX + str(user.id) + "_" + str(reward_cycle.id)
     result = cache.smembers(redis_key)
     if result:
         return list(map(lambda x: int(x), result))

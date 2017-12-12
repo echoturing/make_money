@@ -12,6 +12,7 @@ from account import service
 from account.models import UserFeedback
 from account.service import create_get_gold_record, judge_in_set, add_judge, get_judge_set, get_current_expire, \
     get_user_by_username
+from ad.models import RewardCycle
 from cash import service as cash_service
 from money.tool import CommonResponse
 
@@ -176,7 +177,8 @@ def user_info(request):
                             content_type=CONTENT_TYPE_JSON)
 
     data = service.get_user_info(user.id)
-    data["group_id_list"] = get_judge_set(user)
+    reward_cycle = RewardCycle.objects.filter().order_by("-first_created").first()
+    data["group_id_list"] = get_judge_set(user, reward_cycle)
     return HttpResponse(CommonResponse(error_code=0, error_message="", data=data).to_json(),
                         content_type=CONTENT_TYPE_JSON)
 
@@ -193,18 +195,20 @@ def earn_gold(request):
     gold = param["gold"]
     group_id = param["group_id"]
     # 看看有没有领取过
-    in_set = judge_in_set(user, group_id)
+    reward_cycle_id = param["reward_cycle_id"]
+    reward_cycle = RewardCycle.objects.get(id=reward_cycle_id)
+    in_set = judge_in_set(user, group_id, reward_cycle)
     if in_set:
         return HttpResponse(CommonResponse(error_code=401, error_message="该广告位金币已经领取").to_json(),
                             content_type=CONTENT_TYPE_JSON)
-
+    reward_cycle = RewardCycle.objects.filter().order_by("-first_created").first()
     with transaction.atomic():
         # 增加获取记录
         create_get_gold_record(user=user, gold=gold, group_id=group_id)
         # 增加金币并推送
         cash_service.earn_gold(gold=gold, user=user)
         expire = get_current_expire()
-        add_judge(user, group_id, expire)
+        add_judge(user, group_id, expire, reward_cycle)
     return HttpResponse(CommonResponse(error_code=0, error_message="", data={}).to_json(),
                         content_type=CONTENT_TYPE_JSON)
 

@@ -103,7 +103,7 @@ def get_latest_exchange_rate_json():
 
 
 def build_reward_cycle(reward_cycle):
-    keys = ["cycle", "first_created"]
+    keys = ["id", "cycle", "first_created"]
     return get_obj_dict(reward_cycle, keys)
 
 
@@ -113,7 +113,7 @@ def get_reward_cycle_json():
 
 
 def build_reward_cycle_count(cycle_count):
-    keys = ["count", "first_created"]
+    keys = ["id", "count", "first_created"]
     return get_obj_dict(cycle_count, keys)
 
 
