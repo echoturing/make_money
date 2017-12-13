@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^feedback/$', feedback, name="feedback"),
 
     url(r'^user/$', get_user),
+    url(r'^upload_token/$', get_upload_token_view, name="get_upload_token")
 ]

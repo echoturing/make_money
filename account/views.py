@@ -7,6 +7,7 @@ from functools import update_wrapper
 from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
 from django.http import HttpResponse, HttpRequest
+from qiniu import Auth
 
 from account import service
 from account.models import UserFeedback
@@ -225,3 +226,15 @@ def feedback(request):
 
     return HttpResponse(CommonResponse(error_code=0, error_message="", data={}).to_json(),
                         content_type=CONTENT_TYPE_JSON)
+
+
+access_key = "9E4b70IcvRlsfddw1r1TbRRjBi0ORXx-gSyZdsPV"
+secret_key = "MHaAm-U9PH2kQPdTUnlfBa4tNLBTW_n6cQu7UP59"
+
+
+def get_upload_token_view(request):
+    auth = Auth(access_key=access_key, secret_key=secret_key)
+    token = auth.upload_token("weiwenrui1234567890")
+    return HttpResponse(CommonResponse(error_code=0, error_message="", data={"token": token}).to_json(),
+                        content_type=CONTENT_TYPE_JSON
+                        )
