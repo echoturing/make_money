@@ -61,7 +61,6 @@ class GetGoldRecord(models.Model):
 
 
 class UserFeedback(models.Model):
-    User = models.ForeignKey(User, verbose_name="用户", default="")
     description = models.TextField(verbose_name="问题描述", default="")
     pictures = models.TextField(verbose_name="图片", default="")
     contact = models.TextField(verbose_name="联系方式", default="")

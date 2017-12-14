@@ -216,12 +216,11 @@ def earn_gold(request):
 
 def feedback(request):
     param = json.loads(request.body)
-    user = request.user
     description = param.get("description")
     pictures = param.get("pictures", [])
     contact = param.get("contact")
     phone = param.get("phone")
-    UserFeedback.objects.create(user=user, description=description, pictures=json.dumps(pictures), contact=contact,
+    UserFeedback.objects.create(description=description, pictures=json.dumps(pictures), contact=contact,
                                 phone=phone)
 
     return HttpResponse(CommonResponse(error_code=0, error_message="", data={}).to_json(),
