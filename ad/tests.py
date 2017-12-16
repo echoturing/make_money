@@ -6,7 +6,7 @@ from django.test import TestCase
 # Create your tests here.
 from django.utils import timezone
 
-from money.tool import get_current_minute, need_push
+from money.tool import get_current_minute, cycle_need_push
 
 
 class FuckTestCase(TestCase):
@@ -14,6 +14,6 @@ class FuckTestCase(TestCase):
         pass
 
     def test_animals_can_speak(self):
-        self.assertTrue(need_push(600, 60))
-        self.assertTrue(need_push(100, 20))
-        self.assertFalse(need_push(100, 30))
+        self.assertTrue(cycle_need_push(600, 60))
+        self.assertTrue(cycle_need_push(100, 20))
+        self.assertFalse(cycle_need_push(100, 30))

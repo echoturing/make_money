@@ -6,7 +6,7 @@ import json
 from django.core.management.base import BaseCommand, CommandError
 
 from ad.service import get_reward_cycle_json, get_current_filter, get_reward_cycle_count_json
-from money.tool import need_push, get_current_minute, minutes_to_string_tuple
+from money.tool import cycle_need_push, get_current_minute, minutes_to_string_tuple, range_need_push
 from push.tools import *
 
 from django.utils import timezone
@@ -43,7 +43,7 @@ class Command(BaseCommand):
         force = options.get("force")
         utc_now = timezone.now()
         cycle = get_reward_cycle_json()["cycle"]
-        if need_push(get_current_minute(utc_now), cycle) or force:
+        if (cycle_need_push(get_current_minute(utc_now), cycle) and range_need_push(utc_now)) or force:
             # 推送
             _filter = get_current_filter()  # 屏蔽的省和渠道
             body = get_current_body()

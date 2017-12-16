@@ -12,9 +12,9 @@ import pytz
 import requests
 from django.conf import settings
 from django import forms
+from django.utils import timezone
 
 PHONE_REG = re.compile("^(13[0-9]|14[579]|15[0-3,5-9]|17[0135678]|18[0-9])\\d{8}$")
-
 
 
 def get_rand_int():
@@ -86,8 +86,13 @@ def get_current_second(utc_now):
     return total_second
 
 
-def need_push(total_minutes, cycle):
+def cycle_need_push(total_minutes, cycle):
     return not bool(total_minutes % cycle)
+
+
+def range_need_push(current_utc_time):
+    current_hour = current_utc_time.hour + 8
+    return not (0 <= current_hour <= 8)
 
 
 def minutes_to_string_tuple(minutes):
