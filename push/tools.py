@@ -6,6 +6,7 @@ import json
 
 import time
 
+import datetime
 import requests
 
 APP_KEY = "5a030cc3aed179635800011c"
@@ -181,6 +182,7 @@ class PushMessage(object):
         post_body = json.dumps(body_dict)
         url = self.base_url + "?sign=" + self.sign(post_body, self.base_url)
         response = self.session.post(url, json=body_dict)
+        print datetime.datetime.now()
         print post_body
         print response.content
 
