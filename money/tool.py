@@ -91,7 +91,7 @@ def cycle_need_push(total_minutes, cycle):
 
 
 def range_need_push(current_utc_time):
-    current_hour = current_utc_time.hour + 8
+    current_hour = timezone.make_naive(current_utc_time).hour
     return not (0 <= current_hour <= 8)
 
 
