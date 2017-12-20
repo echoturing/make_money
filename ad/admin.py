@@ -14,6 +14,12 @@ from ad.service import get_latest_reward_cycle_count
 from money.tool import MyMultipleChoiceField
 
 
+class BaseAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        AdConfigCache.expire_ad_config_cache()
+        return super(BaseAdmin, self).save_model(request, obj, form, change)
+
+
 class AdPolicyAdminForm(forms.ModelForm):
     model = AdPolicy
 
@@ -29,7 +35,7 @@ class AdPolicyAdminForm(forms.ModelForm):
                                           code='invalid')
 
 
-class AdPolicyAdmin(admin.ModelAdmin):
+class AdPolicyAdmin(BaseAdmin):
     list_display = ["group_id", "ad_position", "edit_by", "last_modify", "has_gold"]
     readonly_fields = ["group_id", "edit_by"]
     form = AdPolicyAdminForm
@@ -87,7 +93,7 @@ class GlobalShieldConfigAdminForm(forms.ModelForm):
     model = GlobalShieldConfig
 
 
-class GlobalShieldConfigAdmin(admin.ModelAdmin):
+class GlobalShieldConfigAdmin(BaseAdmin):
     list_display = ["shield_type", "comma_split"]
 
     form = GlobalShieldConfigAdminForm
@@ -114,18 +120,18 @@ class ChannelShieldConfigAdminForm(forms.ModelForm):
         return super(ChannelShieldConfigAdminForm, self).clean()
 
 
-class ChannelShieldConfigAdmin(admin.ModelAdmin):
+class ChannelShieldConfigAdmin(BaseAdmin):
     form = ChannelShieldConfigAdminForm
     list_display = ["channel", "start_time", "end_time", "area", "get_status"]
 
 
-class GoldConfigAdmin(admin.ModelAdmin):
+class GoldConfigAdmin(BaseAdmin):
     list_display = ["id", "ad_source", "ad_type", "gold_count"]
     list_display_links = ["id", "ad_source"]
     readonly_fields = ["id", ]
 
 
-class ExchangeRateAdmin(admin.ModelAdmin):
+class ExchangeRateAdmin(BaseAdmin):
     list_display = ["first_created", "gold_count", "money"]
     readonly_fields = ["first_created", ]
 
@@ -138,7 +144,7 @@ class ExchangeRateAdmin(admin.ModelAdmin):
         raise Exception("不能删除对象")
 
 
-class RewardCycleAdmin(admin.ModelAdmin):
+class RewardCycleAdmin(BaseAdmin):
     list_display = ["cycle", "first_created"]
 
     def save_model(self, request, obj, form, change):
@@ -150,7 +156,7 @@ class RewardCycleAdmin(admin.ModelAdmin):
         raise Exception("不能删除对象")
 
 
-class RewardCycleCountAdmin(admin.ModelAdmin):
+class RewardCycleCountAdmin(BaseAdmin):
     list_display = ["count", "first_created"]
 
     def save_model(self, request, obj, form, change):
@@ -162,7 +168,7 @@ class RewardCycleCountAdmin(admin.ModelAdmin):
         raise Exception("不能删除对象")
 
 
-class RewardConditionAdmin(admin.ModelAdmin):
+class RewardConditionAdmin(BaseAdmin):
     list_display = ["typ", "first_created"]
 
 

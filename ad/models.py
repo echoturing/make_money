@@ -9,6 +9,7 @@ from django.db import models
 
 # Create your models here.
 from django.utils.html import format_html
+from django_redis import get_redis_connection
 
 AD_POSITION_CHOICE = (
     ('1', '1'),
@@ -179,3 +180,27 @@ class RewardCondition(models.Model):
     class Meta:
         verbose_name = "红包领取条件设置"
         verbose_name_plural = "红包领取条件设置"
+
+
+AD_CONFIG_CACHE_KEY = "ad_config_cache_key"
+AD_CONFIG_CACHE_EXPIRE = 60 * 60 * 24
+
+cache = get_redis_connection("default")
+
+
+class AdConfigCache(object):
+    @staticmethod
+    def expire_ad_config_cache():
+        cache.set(AD_CONFIG_CACHE_KEY, "", 1)
+
+    @staticmethod
+    def get_ad_config_cache():
+        data = cache.get(AD_CONFIG_CACHE_KEY)
+        if data:
+            return json.loads(data)
+        return None
+
+    @staticmethod
+    def set_ad_config_cache(data):
+        data_str = json.dumps(data)
+        cache.set(AD_CONFIG_CACHE_KEY, data_str, AD_CONFIG_CACHE_EXPIRE)
