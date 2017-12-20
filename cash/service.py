@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import transaction
 
 from account.models import UserProfile
+from account.tasks import push
 from cash.models import CashRecord, CashCategory
 from money.tool import get_obj_dict
 from push.tools import unicast_push_manager, Body, Payload, DisplayType, AfterOpen
@@ -46,7 +47,7 @@ def earn_gold(gold, user=None, user_profile=None):
     body = Body(payload_display_type=DisplayType.notification, after_open=AfterOpen.go_app, ticker=ticker, title=title,
                 text=text, builder_id=builder_id)
     payload = Payload(display_type=DisplayType.notification, body=body)
-    unicast_push_manager.push(payload, device_token=device_token)
+    push(payload, device_token=device_token)
 
 
 def build_cash_category(cash):

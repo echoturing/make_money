@@ -10,6 +10,7 @@ from django.contrib import admin
 from django.db import transaction
 
 from account.admin import admin_site
+from account.tasks import push
 from cash.models import CashCategory, CashChannel, CashRecord, ACCEPT, REFUSED, CashMoneyCategory
 from money.tool import MyMultipleChoiceField
 from push.tools import Body, DisplayType, Payload, unicast_push_manager, AfterOpen
@@ -60,7 +61,7 @@ def make_accept(modeladmin, request, queryset):
                         title=title,
                         text=text, builder_id=builder_id)
             payload = Payload(display_type=DisplayType.notification, body=body)
-            unicast_push_manager.push(payload, device_token=device_token)
+            push.delay(payload, device_token=device_token)
 
 
 make_accept.short_description = "全部通过"

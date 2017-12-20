@@ -5,8 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
 from account.models import UserProfile, GetGoldRecord
+from account.tasks import send_sms
 from ad.service import get_reward_cycle_json
-from message_service.service import send_sms
 from money.tool import get_rand_int, get_obj_dict, get_current_second
 from django_redis import get_redis_connection
 
@@ -27,7 +27,7 @@ def get_reset_password_token(phone):
     key = RESET_PASSWORD_PREFIX + phone
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
-    response = send_sms(phone, unicode(value))
+    response = send_sms.delay(phone, unicode(value))
     return response
 
 
@@ -49,7 +49,7 @@ def get_sign_up_token(phone):
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
 
-    response = send_sms(phone, unicode(value))
+    response = send_sms.delay(phone, unicode(value))
     return response
 
 
