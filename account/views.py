@@ -45,8 +45,8 @@ def sign_up_token(request):
     phone = param["phone"]
     user = get_user_by_username(phone)
     if not user:
-        result = service.get_sign_up_token(phone)
-        return HttpResponse(CommonResponse(error_code=0, error_message="", data=result).to_json(),
+        service.get_sign_up_token(phone)
+        return HttpResponse(CommonResponse(error_code=0, error_message="", data={}).to_json(),
                             content_type=CONTENT_TYPE_JSON)
     else:
         return HttpResponse(CommonResponse(error_code=101, error_message="账号已存在").to_json())

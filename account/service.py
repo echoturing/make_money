@@ -49,8 +49,7 @@ def get_sign_up_token(phone):
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
 
-    response = send_sms.delay(phone, unicode(value))
-    return response
+    send_sms.delay(phone, unicode(value))
 
 
 def validate_token(phone, token, typo):
