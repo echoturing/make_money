@@ -17,4 +17,4 @@ def send_sms(phone, token, expire="10"):
         return dahan_send_sms(phone, content)
     else:
         # 新的
-        sendTemplateSMS(phone, [token, ], "222280")
+        sendTemplateSMS(phone, [token, expire], "222280")
