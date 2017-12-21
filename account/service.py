@@ -27,8 +27,7 @@ def get_reset_password_token(phone):
     key = RESET_PASSWORD_PREFIX + phone
     value = get_rand_int()
     cache.set(key, value, EXPIRE)
-    response = send_sms.delay(phone, unicode(value))
-    return response
+    send_sms.delay(phone, unicode(value))
 
 
 def actual_change_password(phone, password):

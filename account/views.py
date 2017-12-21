@@ -137,8 +137,8 @@ def reset_password_token(request):
     """
     param = json.loads(request.body)
     phone = param["phone"]
-    result = service.get_reset_password_token(phone)
-    return HttpResponse(CommonResponse(error_code=0, error_message="", data=result).to_json(),
+    service.get_reset_password_token(phone)
+    return HttpResponse(CommonResponse(error_code=0, error_message="", data={}).to_json(),
                         content_type=CONTENT_TYPE_JSON)
 
 
