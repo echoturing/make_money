@@ -47,7 +47,7 @@ def earn_gold(gold, user=None, user_profile=None):
     body = Body(payload_display_type=DisplayType.notification, after_open=AfterOpen.go_app, ticker=ticker, title=title,
                 text=text, builder_id=builder_id)
     payload = Payload(display_type=DisplayType.notification, body=body)
-    push(payload, device_token=device_token)
+    push.delay(payload, device_token=device_token)
 
 
 def build_cash_category(cash):
